@@ -1,0 +1,2286 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEDISIGN - Platform Pembelajaran BISINDO Medis Inklusif</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for Admin Panel Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Custom Style Adjustments -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', sans-serif;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .locked-module {
+            position: relative;
+            filter: grayscale(1);
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+    <!-- Navigation Bar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Platform Logo -->
+                <div class="flex items-center gap-3 cursor-pointer" onclick="switchView('home')">
+                    <div class="w-10 h-10 bg-sky-600 rounded-xl flex items-center justify-center text-white shadow-md shadow-sky-200">
+                        <i class="fa-solid fa-hand-holding-medical text-lg"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl font-extrabold tracking-tight text-slate-800">MEDI<span class="text-sky-600">SIGN</span></span>
+                        <p class="text-[9px] text-slate-500 font-bold tracking-wider -mt-1">BISINDO CLINICAL LMS</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Menu -->
+                <nav class="hidden md:flex items-center gap-1">
+                    <button onclick="switchView('home')" id="nav-home" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold transition-all text-sky-700 bg-sky-50">Beranda</button>
+                    <button onclick="switchView('learning-path')" id="nav-learning-path" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold transition-all text-slate-700 hover:bg-slate-50">Jalur Belajar</button>
+                    <button onclick="switchView('dictionary')" id="nav-dictionary" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold transition-all text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-book-medical text-sky-500 mr-1"></i> Kamus Cepat</button>
+                    <button onclick="switchView('patient-simulation')" id="nav-patient-simulation" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold transition-all text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-hospital-user text-emerald-500 mr-1"></i> Simulasi Pasien</button>
+                    <button onclick="switchView('user-dashboard')" id="nav-user-dashboard" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold transition-all text-slate-700 hover:bg-slate-50">Dashboard Nakes</button>
+                    <button onclick="switchView('admin-panel')" id="nav-admin-panel" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold transition-all text-slate-700 hover:bg-slate-50">Panel Admin</button>
+                </nav>
+
+                <!-- Role Selector Widget -->
+                <div class="flex items-center gap-3">
+                    <div class="hidden sm:flex items-center gap-2 bg-slate-100 p-1 rounded-lg">
+                        <button onclick="changeRole('doctor')" id="role-doctor-btn" class="px-3 py-1.5 text-xs font-bold rounded-md transition-all bg-white text-sky-700 shadow-sm">Tenaga Medis</button>
+                        <button onclick="changeRole('admin')" id="role-admin-btn" class="px-3 py-1.5 text-xs font-bold rounded-md transition-all text-slate-600 hover:text-slate-800">Admin</button>
+                    </div>
+                    <!-- Mobile Hamburger -->
+                    <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Drawer -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-slate-200 py-3 px-4 flex flex-col gap-2">
+            <button onclick="switchView('home'); toggleMobileMenu()" class="w-full text-left px-4 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50">Beranda</button>
+            <button onclick="switchView('learning-path'); toggleMobileMenu()" class="w-full text-left px-4 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50">Jalur Belajar</button>
+            <button onclick="switchView('dictionary'); toggleMobileMenu()" class="w-full text-left px-4 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50">Kamus Cepat</button>
+            <button onclick="switchView('patient-simulation'); toggleMobileMenu()" class="w-full text-left px-4 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50">Simulasi Pasien</button>
+            <button onclick="switchView('user-dashboard'); toggleMobileMenu()" class="w-full text-left px-4 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50">Dashboard Nakes</button>
+            <button onclick="switchView('admin-panel'); toggleMobileMenu()" class="w-full text-left px-4 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50">Panel Admin</button>
+        </div>
+    </header>
+
+    <!-- Main Content Dynamic Holder -->
+    <main class="flex-grow">
+        
+        <!-- VIEW 1: HOME SECTION -->
+        <section id="view-home" class="view-section py-8 md:py-16">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <!-- Hero Section Banner -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center mb-16">
+                    <div class="lg:col-span-7 space-y-6">
+                        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-800 text-xs font-bold shadow-sm">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            Platform Kompetensi Komunikasi Inklusif Tenaga Kesehatan
+                        </div>
+                        <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 leading-tight">
+                            Belajar BISINDO Medis untuk <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-emerald-600">Pelayanan Kesehatan</span> yang Lebih Inklusif
+                        </h1>
+                        <p class="text-base md:text-lg text-slate-600 leading-relaxed max-w-2xl">
+                            MEDISIGN membantu Dokter, Perawat, dan Mahasiswa Kedokteran menguasai Bahasa Isyarat Indonesia (BISINDO) klinis demi menekan risiko kesalahan diagnosis (patient safety) serta menjamin kesetaraan hak pasien disabilitas rungu.
+                        </p>
+                        <div class="flex flex-col sm:flex-row gap-4 pt-2">
+                            <button onclick="switchView('learning-path')" class="px-8 py-4 bg-sky-600 text-white font-bold rounded-xl shadow-lg shadow-sky-100 hover:bg-sky-700 transition-all text-center flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-graduation-cap"></i> Mulai Belajar Sekarang
+                            </button>
+                            <button onclick="scrollToElement('urgency-section')" class="px-8 py-4 bg-white text-slate-700 border border-slate-200 font-semibold rounded-xl hover:bg-slate-50 transition-all text-center">
+                                Mengapa Ini Penting?
+                            </button>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-5 relative">
+                        <div class="absolute -top-4 -left-4 w-72 h-72 bg-sky-200 rounded-full filter blur-3xl opacity-20 animate-blob"></div>
+                        <div class="absolute -bottom-4 -right-4 w-72 h-72 bg-emerald-200 rounded-full filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+                        <div class="relative bg-white border border-slate-150 rounded-2xl shadow-xl overflow-hidden p-6 text-center space-y-6">
+                            <div class="w-24 h-24 bg-gradient-to-tr from-sky-50 to-emerald-50 rounded-2xl flex items-center justify-center text-sky-600 text-4xl mx-auto shadow-sm border border-slate-100">
+                                <i class="fa-solid fa-hands-holding-child"></i>
+                            </div>
+                            <div class="space-y-2">
+                                <h3 class="text-xl font-bold text-slate-800">Kurikulum Standar Medis</h3>
+                                <p class="text-xs text-slate-500 max-w-xs mx-auto">Dirancang terstruktur agar berpotensi diintegrasikan dengan platform resmi pelatihan kredensialing tenaga kesehatan.</p>
+                            </div>
+                            <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 grid grid-cols-2 gap-2 text-center text-xs">
+                                <div>
+                                    <span class="block font-bold text-sky-600 text-sm">9</span>
+                                    <span class="text-[10px] text-slate-400 font-medium">Modul Klinis</span>
+                                </div>
+                                <div class="border-l border-slate-200">
+                                    <span class="block font-bold text-emerald-600 text-sm">60+</span>
+                                    <span class="text-[10px] text-slate-400 font-medium">Istilah Medis</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Urgency & Statistics Section -->
+                <div id="urgency-section" class="bg-slate-900 text-white rounded-3xl p-8 md:p-12 shadow-xl mb-16 relative overflow-hidden">
+                    <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#0284c7_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                    <div class="relative max-w-3xl mx-auto text-center mb-12">
+                        <span class="text-xs font-bold uppercase tracking-widest text-sky-400">FAKTA & STATISTIK NASIONAL & GLOBAL</span>
+                        <h2 class="text-3xl md:text-4xl font-extrabold mt-2">Urgensi Pelayanan Kesehatan Inklusif</h2>
+                        <p class="text-slate-400 mt-4 leading-relaxed text-sm md:text-base">Komunikasi yang tidak efisien dalam penanganan klinis pasien disabilitas rungu berdampak langsung pada keselamatan pasien (patient safety) dan keakuratan diagnosis.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto relative">
+                        <!-- WHO Global Statistics Card -->
+                        <div class="bg-white/5 border border-white/10 rounded-2xl p-6 text-center backdrop-blur-sm flex flex-col justify-between">
+                            <div>
+                                <div class="w-12 h-12 bg-sky-500/20 rounded-xl flex items-center justify-center text-sky-400 mx-auto mb-4">
+                                    <i class="fa-solid fa-earth-americas text-xl"></i>
+                                </div>
+                                <span class="block text-3xl font-extrabold text-white mb-2">430+ Juta</span>
+                                <h4 class="text-sm font-semibold text-sky-300">Mengalami Ketulian yang Melemahkan</h4>
+                                <p class="text-xs text-slate-400 mt-3 leading-relaxed">Secara global, WHO mencatat lebih dari 430 juta orang mengalami disabling hearing loss, dan angka ini diproyeksikan meningkat hingga mendekati 700 juta pada tahun 2050.</p>
+                            </div>
+                            <span class="block text-[10px] text-slate-500 font-bold mt-4 tracking-wider uppercase">WHO World Report on Hearing, 2021</span>
+                        </div>
+                        
+                        <!-- Indonesian Statistics Card -->
+                        <div class="bg-white/5 border border-white/10 rounded-2xl p-6 text-center backdrop-blur-sm flex flex-col justify-between">
+                            <div>
+                                <div class="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center text-emerald-400 mx-auto mb-4">
+                                    <i class="fa-solid fa-users text-xl"></i>
+                                </div>
+                                <span class="block text-3xl font-extrabold text-white mb-2">7,03% <span class="text-lg font-medium text-slate-300">(>2,1 Juta)</span></span>
+                                <h4 class="text-sm font-semibold text-emerald-300">Penyandang Tuli di Indonesia</h4>
+                                <p class="text-xs text-slate-400 mt-3 leading-relaxed">Kementerian Sosial mencatat bahwa dari sekitar 30,38 juta penyandang disabilitas di Indonesia, sebanyak 7,03% merupakan penyandang tuli (setara dengan lebih dari 2,1 juta jiwa).</p>
+                            </div>
+                            <span class="block text-[10px] text-slate-500 font-bold mt-4 tracking-wider uppercase">Data Kemensos, 2023</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Key Core Benefits of MEDISIGN Platform -->
+                <div class="mb-16">
+                    <div class="text-center max-w-2xl mx-auto mb-12">
+                        <h2 class="text-3xl font-bold text-slate-900">Manfaat Implementasi BISINDO Medis</h2>
+                        <p class="text-slate-600 mt-2">Mendukung terwujudnya kesetaraan layanan medis berbasis kemainan dan etika bioetika.</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-white border border-slate-200/80 p-6 rounded-2xl hover:shadow-md transition-all">
+                            <div class="w-10 h-10 bg-sky-100 text-sky-600 rounded-lg flex items-center justify-center mb-4"><i class="fa-solid fa-shield-halved"></i></div>
+                            <h4 class="text-base font-bold text-slate-800 mb-2">Patient Safety Terjamin</h4>
+                            <p class="text-xs text-slate-500 leading-relaxed">Menghindari kekeliruan fatal dalam penyampaian riwayat alergi, dosis obat, serta aturan pakai.</p>
+                        </div>
+                        <div class="bg-white border border-slate-200/80 p-6 rounded-2xl hover:shadow-md transition-all">
+                            <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center mb-4"><i class="fa-solid fa-handshake"></i></div>
+                            <h4 class="text-base font-bold text-slate-800 mb-2">Kepatuhan Terapi</h4>
+                            <p class="text-xs text-slate-500 leading-relaxed">Pasien memahami dengan jelas tata cara minum obat harian di rumah, mempercepat proses kesembuhan.</p>
+                        </div>
+                        <div class="bg-white border border-slate-200/80 p-6 rounded-2xl hover:shadow-md transition-all col-span-1 md:col-span-1">
+                            <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center mb-4"><i class="fa-solid fa-scale-balanced"></i></div>
+                            <h4 class="text-base font-bold text-slate-800 mb-2">Etika Kedokteran (Justice & Non-Maleficence)</h4>
+                            <p class="text-xs text-slate-500 leading-relaxed">Menegakkan keadilan pelayanan tanpa diskriminasi sensorik, serta mencegah bahaya (non-maleficence) akibat salah paham diagnosis medis.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 2: LEARNING PATH SECTION -->
+        <section id="view-learning-path" class="view-section py-8 md:py-12 hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <!-- Section Header -->
+                <div class="mb-10 text-center md:text-left">
+                    <h1 class="text-3xl font-extrabold text-slate-900">Jalur Belajar BISINDO Medis</h1>
+                    <p class="text-slate-500 mt-1">Selesaikan seluruh modul terstruktur secara berurutan untuk klaim sertifikasi kelayakan komunikasi klinis.</p>
+                </div>
+
+                <!-- Visual Alur Pembelajaran (Pathways UI) -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-sm mb-12">
+                    <div class="flex flex-col lg:flex-row items-center justify-between gap-6 relative">
+                        <!-- Connecting Line for Desktop -->
+                        <div class="hidden lg:block absolute top-1/2 left-16 right-16 h-1 bg-slate-200 -translate-y-1/2 z-0"></div>
+
+                        <!-- Step 1: Level Dasar -->
+                        <div class="flex items-center gap-4 bg-white px-4 py-3 rounded-xl border border-slate-200 shadow-sm z-10 w-full lg:w-1/4">
+                            <div class="w-10 h-10 bg-sky-600 rounded-lg flex items-center justify-center text-white font-bold">1</div>
+                            <div>
+                                <h4 class="text-xs text-slate-400 font-bold uppercase tracking-wider">Langkah 1</h4>
+                                <h3 class="text-sm font-bold text-slate-800">Level Dasar (M1-M3)</h3>
+                                <p class="text-[10px] text-slate-500">Alfabet, Angka & Identitas</p>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Level Menengah -->
+                        <div id="path-step-mid" class="flex items-center gap-4 bg-slate-50 px-4 py-3 rounded-xl border border-slate-200 shadow-sm z-10 w-full lg:w-1/4 opacity-60">
+                            <div class="w-10 h-10 bg-slate-400 text-white rounded-lg flex items-center justify-center font-bold" id="path-step-mid-num">2</div>
+                            <div>
+                                <h4 class="text-xs text-slate-400 font-bold uppercase tracking-wider">Langkah 2</h4>
+                                <h3 class="text-sm font-bold text-slate-800">Level Menengah (M4-M6)</h3>
+                                <p class="text-[10px] text-slate-500">Gejala & Pemeriksaan Fisik</p>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Level Lanjut -->
+                        <div id="path-step-adv" class="flex items-center gap-4 bg-slate-50 px-4 py-3 rounded-xl border border-slate-200 shadow-sm z-10 w-full lg:w-1/4 opacity-60">
+                            <div class="w-10 h-10 bg-slate-400 text-white rounded-lg flex items-center justify-center font-bold" id="path-step-adv-num">3</div>
+                            <div>
+                                <h4 class="text-xs text-slate-400 font-bold uppercase tracking-wider">Langkah 3</h4>
+                                <h3 class="text-sm font-bold text-slate-800">Level Lanjut (M7-M9)</h3>
+                                <p class="text-[10px] text-slate-500">Obat & Informed Consent</p>
+                            </div>
+                        </div>
+
+                        <!-- Step 4: Sertifikasi -->
+                        <div id="path-step-cert" class="flex items-center gap-4 bg-slate-50 px-4 py-3 rounded-xl border border-slate-200 shadow-sm z-10 w-full lg:w-1/4 opacity-60">
+                            <div class="w-10 h-10 bg-slate-400 text-white rounded-lg flex items-center justify-center font-bold" id="path-step-cert-num">4</div>
+                            <div>
+                                <h4 class="text-xs text-slate-400 font-bold uppercase tracking-wider">Evaluasi</h4>
+                                <h3 class="text-sm font-bold text-slate-800">Ujian & Sertifikasi</h3>
+                                <p class="text-[10px] text-slate-500">Uji Kelulusan Nakes</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grid Modul-modul Belajar -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="modules-container-grid">
+                    <!-- Loaded dynamically via state engine -->
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 3: DETAILED MODULE VIEW -->
+        <section id="view-module-detail" class="view-section py-8 md:py-12 hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <!-- Back Button & Level Badge -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <button onclick="switchView('learning-path')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition-all flex items-center gap-2 self-start">
+                        <i class="fa-solid fa-arrow-left"></i> Kembali ke Kurikulum
+                    </button>
+                    <span id="module-detail-level-badge" class="px-3 py-1 bg-sky-100 text-sky-800 text-xs font-bold rounded-lg uppercase tracking-wider border border-sky-200">Level: Pemula</span>
+                </div>
+
+                <!-- Module Title Banner -->
+                <div class="bg-gradient-to-r from-sky-800 to-slate-900 text-white rounded-2xl p-6 md:p-8 shadow-sm mb-8">
+                    <h2 class="text-2xl md:text-3xl font-extrabold" id="module-detail-title">Nama Modul</h2>
+                    <p class="text-xs md:text-sm text-slate-300 mt-2 max-w-4xl" id="module-detail-desc">Deskripsi lengkap dari pilar pembelajaran klinis yang bersangkutan.</p>
+                </div>
+
+                <!-- Main Layout Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    
+                    <!-- Left Side: Interactive tabs (Video, Document) -->
+                    <div class="lg:col-span-8 space-y-6">
+                        
+                        <!-- Navigation Tabs System (Dictionary removed from modules, kept on independent dictionary view) -->
+                        <div class="bg-white border border-slate-200 rounded-xl p-1.5 flex gap-1 shadow-sm overflow-x-auto custom-scrollbar">
+                            <button onclick="setDetailActiveTab('video')" id="tab-btn-video" class="flex-grow text-center py-2.5 px-4 rounded-lg text-xs md:text-sm font-semibold transition-all bg-sky-600 text-white">🎥 Video Peragaan Isyarat</button>
+                            <button onclick="setDetailActiveTab('pdf')" id="tab-btn-pdf" class="flex-grow text-center py-2.5 px-4 rounded-lg text-xs md:text-sm font-semibold transition-all text-slate-600 hover:bg-slate-100">📄 Dokumen Saku PDF</button>
+                        </div>
+
+                        <!-- Tab 1: Video demonstrator system -->
+                        <div id="tab-pane-video" class="module-tab-pane bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                            <h3 class="text-lg font-bold text-slate-800 mb-4">Video Demonstrasi Isyarat Klinis</h3>
+                            <div class="aspect-video bg-slate-900 rounded-xl overflow-hidden relative shadow-inner mb-4 flex items-center justify-center text-white">
+                                <video id="detail-video-player-frame" controls class="w-full h-full object-cover">
+                                    <source src="https://assets.mixkit.co/videos/preview/mixkit-doctor-explaining-treatment-on-tablet-to-patient-40552-large.mp4" type="video/mp4">
+                                </video>
+                            </div>
+                            <div class="p-4 bg-slate-50 border border-slate-150 rounded-xl">
+                                <h4 class="font-bold text-slate-800 text-sm mb-1" id="detail-video-title">Peragaan Modul</h4>
+                                <p class="text-xs text-slate-500 leading-relaxed" id="detail-video-desc">Gunakan video peragaan ini untuk memverifikasi kesesuaian postural, ritme, ketukan isyarat, serta visual ekspresi dahi (non-manual sign marker) yang penting untuk BISINDO.</p>
+                            </div>
+                        </div>
+
+                        <!-- Tab 2: Simulated PDF Reader (Kemenkes Style Visualizer) -->
+                        <div id="tab-pane-pdf" class="module-tab-pane hidden bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                            <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+                                <h3 class="text-lg font-bold text-slate-800">Panduan Saku Komunikasi Klinis (Syllabus PDF)</h3>
+                                <button onclick="simulatePDFDownload()" class="px-3.5 py-1.5 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-lg text-xs flex items-center gap-1.5 shadow-sm">
+                                    <i class="fa-solid fa-download"></i> Unduh PDF
+                                </button>
+                            </div>
+                            <!-- Live Document Visualizer Mock -->
+                            <div class="border border-slate-200 rounded-xl overflow-hidden">
+                                <div class="bg-slate-100 border-b border-slate-200 px-4 py-3 flex items-center justify-between">
+                                    <span class="text-xs font-semibold text-slate-600"><i class="fa-regular fa-file-pdf text-red-500 mr-1.5 text-sm"></i> Buku-Saku-Medisign-Modul.pdf</span>
+                                    <span class="text-[10px] text-slate-500">Halaman 1 dari 1</span>
+                                </div>
+                                <div id="detail-pdf-visualizer" class="p-6 md:p-8 bg-white max-h-[550px] overflow-y-auto custom-scrollbar text-slate-700 text-sm leading-relaxed space-y-4">
+                                    <!-- Loaded dynamically from static JSON structures -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Side: Sidebar evaluation assessment trigger -->
+                    <div class="lg:col-span-4 space-y-6">
+                        
+                        <!-- Module Learning progress tracking -->
+                        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                            <h4 class="font-bold text-slate-800 text-xs uppercase tracking-wider mb-3">Status Kemajuan Anda</h4>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center text-xs">
+                                    <span class="font-medium text-slate-500">Status Modul</span>
+                                    <span id="detail-sidebar-status" class="px-2.5 py-1 rounded-md text-xs font-bold bg-amber-50 text-amber-700 border border-amber-100">Belum Mengikuti</span>
+                                </div>
+                                <div class="flex justify-between items-center text-xs">
+                                    <span class="font-medium text-slate-500">Skor Tertinggi Kuis</span>
+                                    <span id="detail-sidebar-score" class="font-bold text-slate-800">- / 100</span>
+                                </div>
+                                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                                    <div id="detail-sidebar-progress-bar" class="bg-sky-500 h-full w-0 transition-all duration-500"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quiz / Test Call To Action card -->
+                        <div class="bg-slate-900 text-white rounded-2xl p-6 shadow-md relative overflow-hidden">
+                            <div class="absolute -top-12 -right-12 w-28 h-28 bg-white/5 rounded-full"></div>
+                            <div class="relative z-10 space-y-4">
+                                <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-sky-400">
+                                    <i class="fa-solid fa-clipboard-question text-lg"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-lg">Evaluasi Kuis Modul</h4>
+                                    <p class="text-xs text-slate-400 mt-1">Uji pemahaman isyarat klinis Anda. Dapatkan nilai minimal 80 untuk melaju ke modul selanjutnya dalam learning path.</p>
+                                </div>
+                                <button onclick="triggerQuizStart()" class="w-full py-3 bg-white hover:bg-slate-50 text-slate-900 font-bold rounded-xl text-center shadow-md transition-all text-sm">
+                                    <i class="fa-solid fa-play mr-1.5"></i> Mulai Kuis Evaluasi
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 4: QUIZ INTERFACE VIEW -->
+        <section id="view-quiz-frame" class="view-section py-8 md:py-12 hidden">
+            <div class="max-w-3xl mx-auto px-4">
+                
+                <!-- Quiz Header bar -->
+                <div class="flex items-center justify-between mb-8 border-b border-slate-200 pb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-sky-100 text-sky-700 rounded-xl flex items-center justify-center">
+                            <i class="fa-solid fa-clipboard-question"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-extrabold text-slate-800" id="quiz-title-header">Kuis Modul 1</h2>
+                            <p class="text-xs text-slate-500">Sistem penilaian otomatis Kemenkes RI Standard.</p>
+                        </div>
+                    </div>
+                    <div class="bg-amber-50 border border-amber-200 text-amber-800 font-semibold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5">
+                        <i class="fa-regular fa-clock animate-pulse"></i> Timer: <span id="quiz-timer-span">05:00</span>
+                    </div>
+                </div>
+
+                <!-- Video Quiz Framework Integration -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-bold text-sky-600 tracking-wider uppercase" id="quiz-progress-label">Pertanyaan 1 dari 5</span>
+                        <span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold uppercase tracking-wide">Video-Based Evaluation</span>
+                    </div>
+
+                    <!-- Video Container inside the Quiz Box -->
+                    <div id="quiz-video-container" class="rounded-xl overflow-hidden aspect-video bg-slate-900 border border-slate-200 relative shadow-inner">
+                        <video id="quiz-video-player" class="w-full h-full object-cover" controls autoplay loop muted></video>
+                        <div class="absolute top-3 left-3 bg-slate-950/80 px-2.5 py-1 rounded text-[10px] text-slate-300 font-bold uppercase tracking-wider backdrop-blur-sm">
+                            🎥 Perhatikan Isyarat Di Samping
+                        </div>
+                    </div>
+
+                    <!-- Question textual content -->
+                    <div class="space-y-1">
+                        <h4 class="text-xs text-slate-400 font-bold uppercase tracking-wider">Pertanyaan:</h4>
+                        <h3 class="text-base md:text-lg font-bold text-slate-900 leading-relaxed" id="quiz-question-text">Pernyataan soal?</h3>
+                    </div>
+
+                    <!-- Choice option triggers dynamic render -->
+                    <div class="space-y-3" id="quiz-choices-box">
+                        <!-- Loaded dynamically -->
+                    </div>
+
+                    <!-- Actions navigation drawer -->
+                    <div class="flex justify-between items-center pt-4 border-t border-slate-100">
+                        <button onclick="quizPrevQuestion()" id="quiz-prev-btn" class="px-4 py-2 bg-slate-100 text-slate-600 font-bold rounded-xl text-xs hover:bg-slate-200 transition-all disabled:opacity-50">Sebelumnya</button>
+                        <button onclick="quizNextQuestion()" id="quiz-next-btn" class="px-5 py-2.5 bg-sky-600 text-white font-bold rounded-xl text-xs hover:bg-sky-700 transition-all shadow-md">Berikutnya</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 5: QUIZ RESULT & CERTIFICATE VIEW -->
+        <section id="view-quiz-result" class="view-section py-8 md:py-12 hidden">
+            <div class="max-w-2xl mx-auto px-4 text-center">
+                <div class="bg-white border border-slate-200 rounded-3xl p-8 md:p-12 shadow-sm space-y-6">
+                    
+                    <!-- Icon Status Indicator -->
+                    <div class="w-20 h-20 bg-emerald-100 border-4 border-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-3xl shadow-inner shadow-emerald-100/50" id="quiz-result-icon">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h2 class="text-2xl font-extrabold text-slate-900" id="quiz-result-title">Selamat, Anda Lulus Kuis!</h2>
+                        <p class="text-xs md:text-sm text-slate-500 max-w-md mx-auto" id="quiz-result-subtitle">Anda menunjukkan pemahaman klinis yang memadai mengenai isyarat medis yang diajarkan.</p>
+                    </div>
+
+                    <!-- Score box badge -->
+                    <div class="bg-slate-50 border border-slate-150 rounded-2xl p-6 inline-block min-w-[200px] shadow-sm">
+                        <span class="text-xs text-slate-400 font-bold uppercase tracking-widest block">Skor Evaluasi</span>
+                        <span class="text-5xl font-black text-slate-800 animate-pulse" id="quiz-result-score-val">90<span class="text-lg text-slate-400 font-bold">/100</span></span>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex flex-col sm:flex-row gap-3 justify-center pt-4">
+                        <button onclick="switchView('learning-path')" class="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs transition-all">Kembali ke Kurikulum</button>
+                        <button onclick="renderAndDownloadCertificate()" id="quiz-cert-button" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-lg shadow-emerald-100 transition-all flex items-center justify-center gap-2 hidden">
+                            <i class="fa-solid fa-medal"></i> Cetak Sertifikat Kelulusan Utama
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Hidden Canvas element to paint Digital certificate at high resolution in background -->
+                <canvas id="hidden-certificate-canvas" class="hidden" width="1200" height="850"></canvas>
+            </div>
+        </section>
+
+        <!-- VIEW 6: MEDICAL DICTIONARY (KAMUS BISINDO GLOBAL) -->
+        <section id="view-dictionary" class="view-section py-8 md:py-12 hidden">
+            <div class="max-w-5xl mx-auto px-4">
+                
+                <!-- Section Header -->
+                <div class="text-center space-y-4 mb-8">
+                    <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Kamus Cepat BISINDO Medis</h1>
+                    <p class="text-slate-500 text-sm max-w-2xl mx-auto">Fitur pencarian kilat istilah keluhan, tanda gejala, dan tindakan medis yang dirancang agar nakes dapat melacak cara isyarat dalam hitungan detik saat penanganan klinis berlangsung.</p>
+                </div>
+
+                <!-- Dynamic Search Input -->
+                <div class="relative max-w-2xl mx-auto mb-10 shadow-sm rounded-2xl border border-slate-200 overflow-hidden">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="dict-search-input" onkeyup="filterDictionarySearch()" placeholder="Cari istilah medis (misal: Demam, Batuk, Sesak, Obat, Operasi)..." class="w-full pl-11 pr-4 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500/30">
+                </div>
+
+                <!-- Grid Results container -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="dict-results-grid">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 7: DEAF PATIENT CLINICAL SIMULATION -->
+        <section id="view-patient-simulation" class="view-section py-8 md:py-12 hidden">
+            <div class="max-w-4xl mx-auto px-4">
+                
+                <!-- Section Header -->
+                <div class="flex items-center gap-3 mb-6 border-b border-slate-200 pb-4 justify-between flex-wrap">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-xl flex items-center justify-center text-xl shadow-inner">
+                            <i class="fa-solid fa-hospital-user"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-extrabold text-slate-900">Simulasi Pasien Tuli Virtual</h1>
+                            <p class="text-xs text-slate-500">Uji langsung etika komunikasi klinis dalam lingkungan poliklinik interaktif.</p>
+                        </div>
+                    </div>
+                    <!-- Select Scenario -->
+                    <div class="flex items-center gap-2">
+                        <label class="text-xs font-bold text-slate-500 uppercase">Skenario:</label>
+                        <select id="sim-scenario-selector" onchange="initiateSimulationScenario()" class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs bg-white text-slate-700 font-semibold focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                            <option value="intro">Sapaan & Perkenalan Diri</option>
+                            <option value="anamnesis">Anamnesis Keluhan</option>
+                            <option value="physical">Pemeriksaan Fisik (Tarik Napas)</option>
+                            <option value="education">Edukasi Pasien</option>
+                            <option value="consent">Informed Consent Operasi</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Interactive Simulator Box -->
+                <div class="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm grid grid-cols-1 md:grid-cols-12">
+                    
+                    <!-- Left Column: Virtual Patient visual panel -->
+                    <div class="md:col-span-5 bg-slate-900 p-6 flex flex-col items-center justify-between min-h-[350px] relative text-white">
+                        <span class="absolute top-4 left-4 bg-emerald-600 text-white text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wider">Poliklinik MEDISIGN</span>
+                        
+                        <!-- Compliance/Understanding Meter -->
+                        <div class="w-full space-y-1 bg-black/40 p-2.5 rounded-xl border border-white/10 mt-6">
+                            <div class="flex justify-between items-center text-[10px] font-bold text-slate-300">
+                                <span>PEMAHAMAN PASIEN:</span>
+                                <span id="sim-understanding-percent">50%</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                <div id="sim-understanding-fill" class="bg-emerald-500 h-full w-[50%] transition-all duration-500"></div>
+                            </div>
+                        </div>
+
+                        <!-- Patient Mock SVG Avatar -->
+                        <div class="my-6 text-center space-y-4">
+                            <div class="w-28 h-28 bg-slate-800 rounded-full border-4 border-slate-700 mx-auto flex items-center justify-center relative overflow-hidden">
+                                <svg class="w-20 h-20 text-slate-300 mt-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+                                <div class="absolute inset-0 border-2 border-emerald-400 rounded-full animate-ping opacity-25"></div>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm" id="sim-patient-name">Budi (Pasien Tuli)</h4>
+                                <p class="text-[10px] text-slate-400">Sedang mengisyaratkan keluhan...</p>
+                            </div>
+                        </div>
+
+                        <!-- Patient Sign Language Textual Bubble -->
+                        <div class="bg-slate-800 border border-slate-700 p-4 rounded-2xl text-center w-full relative">
+                            <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-slate-800 rotate-45 border-l border-t border-slate-700"></div>
+                            <p class="text-xs text-sky-300 uppercase tracking-widest font-extrabold mb-1">Gerakan Isyarat Pasien:</p>
+                            <p class="text-sm font-semibold leading-relaxed" id="sim-patient-bubble-text">"SAYA SAKIT KEPALA"</p>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Choices and responses dialogue panel -->
+                    <div class="md:col-span-7 p-6 flex flex-col justify-between">
+                        
+                        <div class="space-y-4">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">PILIH RESPONS DOKTER / NAKES YANG TEPAT:</span>
+                            <div class="space-y-3" id="sim-responses-box">
+                                <!-- Loaded dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Simulation feedback logger -->
+                        <div id="sim-feedback-box" class="mt-6 p-4 rounded-xl border hidden animate-fadeIn">
+                            <h5 class="text-xs font-bold uppercase mb-1" id="sim-feedback-title">Umpan Balik Tindakan</h5>
+                            <p class="text-xs text-slate-600 leading-relaxed" id="sim-feedback-desc">Detail penjelasan etika.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 8: USER DASHBOARD SECTION -->
+        <section id="view-user-dashboard" class="view-section py-8 md:py-12 hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <!-- Welcome Banner -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm mb-8 flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="flex items-center gap-4 flex-col sm:flex-row text-center sm:text-left">
+                        <div class="w-14 h-14 bg-sky-100 text-sky-700 rounded-xl flex items-center justify-center font-black text-xl shadow-inner border border-sky-200">
+                            Dr
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-slate-800" id="user-display-name">dr. Fitra Ramadhan, Sp.A</h2>
+                            <p class="text-xs text-slate-400 mt-1">Tenaga Medis Pengguna Aktif • Spesialis Anak • ID: <span class="font-mono text-slate-600">NAKES-2026-403</span></p>
+                        </div>
+                    </div>
+                    <!-- Quick Stats Badges -->
+                    <div class="flex gap-4 bg-slate-50 p-4 rounded-xl border border-slate-100 w-full md:w-auto justify-around">
+                        <div class="text-center px-4 border-r border-slate-200">
+                            <span class="text-[10px] text-slate-400 block uppercase font-bold tracking-wider">Progress Belajar</span>
+                            <span class="text-lg font-black text-sky-600" id="user-dashboard-percent">0%</span>
+                        </div>
+                        <div class="text-center px-4">
+                            <span class="text-[10px] text-slate-400 block uppercase font-bold tracking-wider">Sertifikat Kelulusan</span>
+                            <span class="text-lg font-black text-slate-800" id="user-dashboard-certs-count">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Layout of User Progress Table -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    
+                    <!-- Left: Completed Modules Tracker -->
+                    <div class="lg:col-span-8 space-y-6">
+                        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                            <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center justify-between">
+                                <span>Evaluasi Kelulusan Kuis Modul</span>
+                                <span class="text-xs text-slate-400 font-semibold">Plataran Sehat Sync Ready</span>
+                            </h3>
+
+                            <div class="space-y-3" id="user-dashboard-modules-list">
+                                <!-- Loaded dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Unified Digital Certificates Vault -->
+                    <div class="lg:col-span-4 space-y-6">
+                        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                            <h3 class="text-lg font-bold text-slate-800 mb-2">Sertifikat Utama Anda</h3>
+                            <p class="text-xs text-slate-500 mb-4 leading-relaxed">Dapatkan Sertifikat Kelulusan Utama berstandardisasi setelah Anda menyelesaikan seluruh kuis di semua modul.</p>
+                            
+                            <div class="space-y-3" id="user-dashboard-certificates-grid">
+                                <!-- Loaded dynamically, falls back to locked banner if incomplete -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 9: ADMIN PANEL SECTION -->
+        <section id="view-admin-panel" class="view-section py-8 md:py-12 hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <!-- Section Header -->
+                <div class="mb-8">
+                    <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Panel Administrasi MEDISIGN</h1>
+                    <p class="text-slate-500 mt-1">Simulasi upload, penambahan modul, pembaharuan berkas panduan PDF, saku video, dan dashboard pengawasan aktivitas belajar.</p>
+                </div>
+
+                <!-- Admin Metrics Dashboard Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-widest block">Total Pengguna Terdaftar</span>
+                        <div class="flex items-center justify-between mt-2">
+                            <span class="text-3xl font-black text-slate-800" id="admin-stat-users">4,912</span>
+                            <span class="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded font-bold"><i class="fa-solid fa-caret-up mr-0.5"></i> +12%</span>
+                        </div>
+                    </div>
+                    <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-widest block">Jumlah Sertifikat Rilis</span>
+                        <div class="flex items-center justify-between mt-2">
+                            <span class="text-3xl font-black text-slate-800" id="admin-stat-certs">1,402</span>
+                            <span class="text-[10px] bg-sky-50 text-sky-700 px-2 py-0.5 rounded font-bold">Terverifikasi QR</span>
+                        </div>
+                    </div>
+                    <div class="bg-white border border-slate-200 p-5 rounded-2xl shadow-sm">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-widest block">Modul Aktif Terintegrasi</span>
+                        <div class="flex items-center justify-between mt-2">
+                            <span class="text-3xl font-black text-slate-800">9</span>
+                            <span class="text-[10px] bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded font-bold">Standard Kurikulum</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    
+                    <!-- Left Column: Manage/Upload content simulators -->
+                    <div class="lg:col-span-5 space-y-6">
+                        
+                        <!-- Upload PDF Material form -->
+                        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                            <h3 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-file-pdf text-red-500"></i> Perbarui Berkas Panduan & Gambar Saku</h3>
+                            <form onsubmit="handleAdminPDFSubmit(event)" class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">Pilih Modul Induk:</label>
+                                    <select id="admin-pdf-module-target" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-sky-500">
+                                        <!-- Filled via JS loop -->
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">Judul Dokumen Saku:</label>
+                                    <input type="text" id="admin-pdf-title" required placeholder="Buku Saku Komunikasi Klinis... " class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-sky-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">Teks Konten Dokumen:</label>
+                                    <textarea id="admin-pdf-content" rows="4" required placeholder="Tulis rincian panduan etika atau langkah isyarat baru..." class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-sky-500"></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">Unggah Gambar Panduan Tambahan:</label>
+                                    <input type="file" id="admin-pdf-image" accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100">
+                                </div>
+                                <button type="submit" class="w-full py-2.5 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-lg text-xs transition-all shadow-sm">
+                                    Simpan & Perbarui Dokumen
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Upload Video Demonstrator form -->
+                        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                            <h3 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-video text-indigo-500"></i> Perbarui / Tambah Video Demonstrasi</h3>
+                            <form onsubmit="handleAdminVideoSubmit(event)" class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">Pilih Modul Induk:</label>
+                                    <select id="admin-video-module-target" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                                        <!-- Filled via JS loop -->
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">Link Sumber Video (Simulasi / Embed URL):</label>
+                                    <input type="text" id="admin-video-url" placeholder="https://assets.mixkit.co/videos/preview/mixkit-..." class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">Keterangan / Deskripsi Video:</label>
+                                    <input type="text" id="admin-video-desc" required placeholder="Demonstrasi gerak isyarat dahi dan postural..." class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                                </div>
+                                <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-xs transition-all shadow-sm">
+                                    Simpan & Perbarui Video Modul
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- NEW: Upload Video Istilah Kamus Cepat form -->
+                        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                            <h3 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-book-medical text-emerald-500"></i> Unggah Video Istilah Kamus Cepat</h3>
+                            <form onsubmit="handleAdminDictVideoSubmit(event)" class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">Pilih Istilah Medis:</label>
+                                    <select id="admin-dict-word-target" class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                                        <!-- Filled via JS loop -->
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">Unggah File Video (.mp4):</label>
+                                    <input type="file" id="admin-dict-video-file" accept="video/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
+                                </div>
+                                <div class="text-center text-[10px] text-slate-400 font-bold uppercase">— ATAU —</div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">URL Link Video Alternatif:</label>
+                                    <input type="text" id="admin-dict-video-url" placeholder="https://assets.mixkit.co/videos/preview/..." class="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                                </div>
+                                <button type="submit" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs transition-all shadow-sm">
+                                    Perbarui Video Istilah
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Chart analytics metrics -->
+                    <div class="lg:col-span-7 space-y-6">
+                        
+                        <!-- Visual analytics bar chart -->
+                        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                            <h3 class="font-bold text-slate-800 text-sm mb-1">Rata-rata Kelulusan Kuis per Modul</h3>
+                            <p class="text-xs text-slate-400 mb-4">Grafik real-time progress kelulusan kuis dari total nakes terdaftar.</p>
+                            <div class="h-64 relative">
+                                <canvas id="admin-chart-analytics"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Simple Material Management Logs -->
+                        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                            <h3 class="font-bold text-slate-800 text-sm mb-4">Pengelolaan Log Berkas & Modul</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse text-xs">
+                                    <thead>
+                                        <tr class="border-b border-slate-200 text-slate-400 font-semibold tracking-wider uppercase">
+                                            <th class="pb-2">Modul</th>
+                                            <th class="pb-2">Keberadaan PDF</th>
+                                            <th class="pb-2">Status Video</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="admin-log-table-body" class="divide-y divide-slate-100">
+                                        <!-- Loaded dynamically -->
+                                    </tbody>
+                                end</table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Custom Modal Dialogue Notification box -->
+    <div id="custom-alert-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm transition-all duration-300">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-100 flex flex-col items-center text-center space-y-4 transform scale-95 transition-all duration-300">
+            <div id="alert-icon-wrapper" class="w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-inner">
+                <i class="fa-solid fa-circle-check" id="alert-icon-box"></i>
+            </div>
+            <div>
+                <h4 class="font-bold text-slate-800 text-lg" id="alert-title-box">Notifikasi</h4>
+                <p class="text-xs text-slate-500 mt-1.5 leading-relaxed" id="alert-message-box">Informasi notifikasi penting nakes.</p>
+            </div>
+            <button onclick="closeAlertModal()" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition-all shadow-md">
+                Tutup
+            </button>
+        </div>
+    </div>
+
+    <!-- Website Footer block -->
+    <footer class="bg-white border-t border-slate-200 py-10 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+            <div class="flex items-center justify-center gap-2">
+                <span class="w-8 h-8 bg-sky-600 rounded-lg flex items-center justify-center text-white text-sm shadow-sm"><i class="fa-solid fa-hand-holding-medical"></i></span>
+                <span class="font-extrabold text-slate-800 text-base tracking-tight">MEDI<span class="text-sky-600">SIGN</span></span>
+            </div>
+            <p>© 2026 MEDISIGN (Medical Sign Language for Inclusive Healthcare). Seluruh Hak Cipta Dilindungi.</p>
+            <p class="max-w-xl mx-auto text-[10px] text-slate-400">Kurikulum bahasa isyarat BISINDO Medis ini tervalidasi dan aplikatif untuk kepentingan pelayanan keprofesian klinis dokter, bidan, perawat, dan staf penunjang kesehatan di Indonesia.</p>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT STATE ENGINE & CORE INTERACTIVE LOGIC -->
+    <script>
+        const initialModules = [
+            {
+                id: 1,
+                title: "Dasar Alfabet, Angka, dan Perkenalan Diri",
+                desc: "Mempelajari etika kontak visual awal, sapaan pembuka, dasar alfabet isyarat BISINDO (A-Z), angka isyarat (0-2000), serta cara memperkenalkan diri sebagai tenaga kesehatan profesional.",
+                level: "Dasar",
+                completed: false,
+                quizScore: null,
+                pdfImage: "image_fe671f.jpg", // Updated to the correct Baturaja image
+                pdfTitle: "Buku Saku Modul 1: Alfabet, Angka & Perkenalan Diri Nakes",
+                pdfContent: `
+                    <h4 class="font-bold text-slate-900 text-sm mb-2">A. Protokol Komunikasi Awal</h4>
+                    <p class="mb-3">Kunci komunikasi utama dengan pasien disabilitas rungu adalah mengutamakan visual penuh. Pastikan Anda berada dalam posisi sejajar, pertahankan kontak mata, dan mulailah dengan senyum hangat sebelum melakukan isyarat pembuka.</p>
+                    
+                    <h4 class="font-bold text-slate-900 text-sm mb-2">B. Istilah Perkenalan Diri Nakes</h4>
+                    <p class="mb-2">Gunakan kalimat sapaan terstruktur untuk mengenalkan identitas profesional Anda secara inklusif:</p>
+                    <ul class="list-disc pl-5 mb-4 space-y-1.5 text-xs text-slate-600">
+                        <li><strong>"Selamat pagi."</strong> (Angkat tangan melambai setinggi dada secara anggun diikuti senyuman)</li>
+                        <li><strong>"Halo, saya Dokter."</strong> (Tangan kanan membuat isyarat melambai, diikuti visualisasi memegang stetoskop di dada)</li>
+                        <li><strong>"Halo, saya Perawat."</strong> (Tangan kanan melambai, kemudian letakkan dua jari telunjuk dan tengah kanan rapat horizontal di atas dahi kanan menyimbolkan topi perawat)</li>
+                        <li><strong>"Saya ingin membantu Anda."</strong> (Tunjuk diri sendiri, silangkan telapak tangan, lalu dorong kedua tangan menghadap atas ke depan sebagai simbol bantuan)</li>
+                    </ul>
+
+                    <h4 class="font-bold text-slate-900 text-sm mb-2">C. Referensi Visual Poster BISINDO</h4>
+                    <p class="mb-3">Di bawah ini adalah poster panduan isyarat jari alfabet dan angka resmi dari SLB Baturaja (Chryz, Deri & Alfi) sebagai acuan visual utama dalam latihan gerakan Anda:</p>
+                `,
+                videoTitle: "Demonstrasi Video Pembukaan & Perkenalan Diri",
+                videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-talking-to-a-patient-in-the-consulting-room-40562-large.mp4",
+                videoDesc: "Saksikan bagaimana petugas kesehatan mendapatkan perhatian visual (eye contact) pasien tuli secara sopan dan menyapa secara terarah.",
+                vocab: [
+                    { word: "Selamat Pagi", desc: "Angkat telapak tangan melambai setinggi dada secara anggun diikuti senyuman hangat.", visual: "☀️", usage: "Gunakan saat menyambut kedatangan pasien tuli pertama kali.", videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-talking-to-a-patient-in-the-consulting-room-40562-large.mp4" },
+                    { word: "Dokter", desc: "Tangan kanan diletakkan di bagian dada menyimbolkan mendengarkan detak jantung dengan stetoskop.", visual: "🩺", usage: "Memperkenalkan identitas profesi dokter.", videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-talking-to-a-patient-in-the-consulting-room-40562-large.mp4" },
+                    { word: "Perawat", desc: "Dua jari telunjuk dan tengah kanan rapat diletakkan mendatar di atas dahi kanan sebagai visualisasi topi perawat.", visual: "🏥", usage: "Memperkenalkan identitas profesi perawat.", videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-talking-to-a-patient-in-the-consulting-room-40562-large.mp4" }
+                ]
+            },
+            {
+                id: 2,
+                title: "Identitas Pasien",
+                desc: "Mempelajari cara menanyakan data identitas dasar pasien seperti nama, umur, alamat domisili, status kedatangan (sendiri), serta kehadiran pendamping.",
+                level: "Dasar",
+                completed: false,
+                quizScore: null,
+                pdfTitle: "Buku Saku Modul 2: Registrasi dan Identifikasi Identitas Pasien",
+                pdfContent: `
+                    <h4 class="font-bold text-slate-900 text-sm mb-2">A. Penelusuran Identitas Pasien</h4>
+                    <p class="mb-3">Menggali identitas pasien dengan bahasa isyarat yang tepat untuk menghindari kekeliruan pencatatan data medis:</p>
+                    
+                    <ul class="list-disc pl-5 mb-4 space-y-2 text-xs text-slate-700">
+                        <li><strong>"Nama Anda siapa?"</strong> (Menyilangkan jari telunjuk dan tengah menempel pada dada kiri atas menyimbolkan huruf N, dilanjutkan gestur bertanya)</li>
+                        <li><strong>"Umur Anda berapa?"</strong> (Ketukkan ujung jari telunjuk di dekat dagu atau visualisasi penanda angka usia)</li>
+                        <li><strong>"Alamat Anda di mana?"</strong> (Kedua telapak tangan menghadap ke bawah membuat gerakan mendatar melambangkan area tempat tinggal)</li>
+                        <li><strong>"Apakah Anda datang sendiri?"</strong> (Tunjukkan telunjuk satu tegak lalu gerakkan maju ke depan secara tunggal)</li>
+                        <li><strong>"Apakah ada pendamping?"</strong> (Kedua tangan dikepalkan bersisian lalu digerakkan bersamaan menunjukkan kebersamaan)</li>
+                    </ul>
+                `,
+                videoTitle: "Peragaan Wawancara Identitas Pasien",
+                videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-explaining-treatment-on-tablet-to-patient-40552-large.mp4",
+                videoDesc: "Panduan praktis berinteraksi secara empatis untuk memverifikasi data registrasi klinik pasien.",
+                vocab: [
+                    { word: "Nama", desc: "Menyilangkan jari telunjuk dan tengah menempel pada dada kiri atas (huruf N).", visual: "📛", usage: "Gunakan saat menanyakan identitas rekam medis pasien.", videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-explaining-treatment-on-tablet-to-patient-40552-large.mp4" },
+                    { word: "Alamat", desc: "Kedua telapak tangan menghadap ke bawah membuat gerakan mendatar melambangkan rumah.", visual: "🏠", usage: "Verifikasi domisili tempat tinggal pasien.", videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-explaining-treatment-on-tablet-to-patient-40552-large.mp4" },
+                    { word: "Pendamping", desc: "Kedua kepalan tangan diletakkan berdampingan bergerak searah secara beriringan.", visual: "👥", usage: "Menanyakan adanya wali pendamping pasien tuli.", videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-explaining-treatment-on-tablet-to-patient-40552-large.mp4" }
+                ]
+            },
+            {
+                id: 3,
+                title: "Anamnesis (Penggalian Keluhan)",
+                desc: "Merupakan bagian terpenting dalam konsultasi medis. Mempelajari cara menanyakan keluhan utama, lokasi rasa sakit, onset/sejak kapan keluhan muncul, serta riwayat obat awal.",
+                level: "Dasar",
+                completed: false,
+                quizScore: null,
+                pdfTitle: "Buku Saku Modul 3: Teknik Anamnesis Klinis Terarah",
+                pdfContent: `
+                    <h4 class="font-bold text-slate-900 text-sm mb-2">A. Penggalian Keluhan Utama Terstruktur</h4>
+                    <p class="mb-3">Anamnesis adalah fondasi utama penentuan diagnosis. Pada modul ini, fokus kita adalah melatih refleks isyarat klinis untuk serangkaian kalimat eksplorasi yang wajib dikuasai nakes:</p>
+                    
+                    <ul class="list-disc pl-5 mb-4 space-y-2 text-xs text-slate-700">
+                        <li><strong>"Apa keluhan utama Anda?"</strong> (Membuka kedua tangan menghadap atas dilanjutkan dengan ekspresi bertanya empatis)</li>
+                        <li><strong>"Apa yang Anda rasakan?"</strong> (Tempelkan ujung jari tengah kanan ke area dada kiri diiringi kerutan dahi lembut)</li>
+                        <li><strong>"Sakit di bagian mana?"</strong> (Goyangkan jari telunjuk berulang di dekat lokasi anatomis tubuh pasien yang dirasa nyeri)</li>
+                        <li><strong>"Sejak kapan keluhan muncul?"</strong> (Tunjuk pergelangan tangan lalu buat kibasan telapak tangan ke arah belakang bahu)</li>
+                        <li><strong>"Apakah nyerinya bertambah berat?"</strong> (Mulai isyarat sakit pelan lalu rentangkan kedua tangan lebar mencerminkan keparahan)</li>
+                        <li><strong>"Apakah keluhan muncul terus-menerus atau hilang timbul?"</strong> (Isyarat berkesinambungan mendatar diikuti tanda pemisahan gelombang naik turun)</li>
+                        <li><strong>"Apakah Anda sudah minum obat?"</strong> (Isyarat menyuap pil dilanjutkan gestur menanyakan kepastian/konfirmasi)</li>
+                    </ul>
+                `,
+                videoTitle: "Peragaan Teknik Anamnesis Pasien Tuli",
+                videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-explaining-treatment-on-tablet-to-patient-40552-large.mp4",
+                videoDesc: "Panduan praktis berinteraksi secara empatis, menanyakan onset kronologi gejala, serta menelusuri penjalaran rasa sakit menggunakan ekspresi non-manual.",
+                vocab: [
+                    { word: "Sakit", desc: "Mengerutkan dahi, putar jari telunjuk di dekat bagian tubuh yang nyeri.", visual: "🤒", usage: "Keluhan utama yang paling sering ditanyakan saat nakes memulai konsultasi.", videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-talking-to-a-patient-in-the-consulting-room-40562-large.mp4" },
+                    { word: "Sejak Kapan", desc: "Tunjuk arah pergelangan tangan lalu lambaikan tangan ke belakang bahu.", visual: "⏳", usage: "Menentukan durasi patologi penyakit (akut atau kronis).", videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-explaining-treatment-on-tablet-to-patient-40552-large.mp4" },
+                    { word: "Sudah Minum Obat", desc: "Simulasikan gerakan memegang pil, memasukkan ke mulut, lalu membuat gestur bertanya.", visual: "💊", usage: "Verifikasi tindakan penanganan mandiri yang dilakukan pasien.", videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-explaining-treatment-on-tablet-to-patient-40552-large.mp4" }
+                ]
+            },
+            {
+                id: 4,
+                title: "Gejala yang Sering Ditanyakan",
+                desc: "Menguasai kosakata istilah keluhan medis umum mulai dari demam, batuk, pilek, sesak napas, pusing, nyeri dada/perut, mual muntah, diare, hingga sulit tidur.",
+                level: "Menengah",
+                completed: false,
+                quizScore: null,
+                pdfTitle: "Buku Saku Modul 4: Kamus Gejala Klinis BISINDO",
+                pdfContent: `
+                    <h4 class="font-bold text-slate-900 text-sm mb-2">A. Penapisan Gejala Umum & Infeksi</h4>
+                    <p class="mb-3">Berikut adalah padanan isyarat dan visualisasi gejala klinis yang paling sering ditanyakan saat pemeriksaan di faskes:</p>
+                    
+                    <div class="grid grid-cols-2 gap-4 text-xs mb-4">
+                        <div class="p-2.5 bg-slate-50 border rounded-xl">
+                            <span class="font-extrabold text-sky-700 block mb-1">Demam</span>
+                            Punggung tangan ditempelkan erat ke dahi dengan dahi mengernyit.
+                        </div>
+                        <div class="p-2.5 bg-slate-50 border rounded-xl">
+                            <span class="font-extrabold text-sky-700 block mb-1">Batuk</span>
+                            Tangan mengepal diletakkan di depan tenggorokan disertai hentakan batuk.
+                        </div>
+                        <div class="p-2.5 bg-slate-50 border rounded-xl">
+                            <span class="font-extrabold text-sky-700 block mb-1">Pilek</span>
+                            Ibu jari dan telunjuk mengusap lubang hidung mengarah ke bawah berulang kali.
+                        </div>
+                        <div class="p-2.5 bg-slate-50 border rounded-xl">
+                            <span class="font-extrabold text-sky-700 block mb-1">Sesak Napas</span>
+                            Menepuk dada berulang-ulang dengan ekspresi napas tersengal berat.
+                        </div>
+                        <div class="p-2.5 bg-slate-50 border rounded-xl">
+                            <span class="font-extrabold text-sky-700 block mb-1">Pusing / Sakit Kepala</span>
+                            Pegang dahi dengan kedua tangan lalu buat gerakan memutar lambang bergoyang.
+                        </div>
+                        <div class="p-2.5 bg-slate-50 border rounded-xl">
+                            <span class="font-extrabold text-sky-700 block mb-1">Mual / Muntah</span>
+                            Pegang ulu hati lalu dekatkan tangan mengepal ke mulut dengan ekspresi meludah.
+                        </div>
+                    </div>
+
+                    <h4 class="font-bold text-slate-900 text-sm mb-2">B. Contoh Konstruksi Pertanyaan Diagnostik</h4>
+                    <ul class="list-disc pl-5 text-xs text-slate-600 space-y-1">
+                        <li><strong>"Apakah Anda demam?"</strong> (Tempel tangan di dahi diikuti tanda tanya)</li>
+                        <li><strong>"Apakah Anda batuk?"</strong> (Goyangkan kepala sambil menghentakkan kepalan di tenggorokan)</li>
+                        <li><strong>"Apakah Anda sesak napas?"</strong> (Menepuk-nepuk dada dengan napas pendek-pendek)</li>
+                    </ul>
+                `,
+                videoTitle: "Peragaan Isyarat Gejala Saluran Napas & Pencernaan",
+                videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-talking-to-a-patient-in-the-consulting-room-40562-large.mp4",
+                videoDesc: "Cara membedakan isyarat mual, muntah mendadak, diare akut, hingga lemas dan sulit tidur secara ekspresif.",
+                vocab: [
+                    { word: "Demam", desc: "Punggung tangan ditempelkan erat ke dahi dengan dahi mengernyit.", visual: "🔥", usage: "Indikator klinis peradangan atau infeksi sistemik.", videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-talking-to-a-patient-in-the-consulting-room-40562-large.mp4" },
+                    { word: "Batuk", desc: "Tangan mengepal diletakkan di depan tenggorokan disertai hentakan batuk asli.", visual: "😷", usage: "Digunakan untuk menapis gangguan respirasi.", videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-talking-to-a-patient-in-the-consulting-room-40562-large.mp4" },
+                    { word: "Sesak Napas", desc: "Menepuk dada berulang-ulang dengan ekspresi napas tersengal berat.", visual: "🫁", usage: "Gawat darurat! Segera arahkan ke tabung oksigen atau pasang kanul.", videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-talking-to-a-patient-in-the-consulting-room-40562-large.mp4" }
+                ]
+            },
+            {
+                id: 5,
+                title: "Riwayat Penyakit",
+                desc: "Eksplorasi riwayat alergi obat, penyakit kronis (diabetes, hipertensi), serta riwayat tindakan rawat inap (opname) dan pembedahan (operasi).",
+                level: "Menengah",
+                completed: false,
+                quizScore: null,
+                pdfTitle: "Buku Saku Modul 5: Melacak Riwayat Medis Pasien",
+                pdfContent: `
+                    <h4 class="font-bold text-slate-900 text-sm mb-2">A. Penelusuran Penyakit Penyerta</h4>
+                    <p class="mb-3">Menelusuri komorbiditas demi keselamatan tindakan invasif. Berikut adalah kumpulan pertanyaan terarah BISINDO:</p>
+                    
+                    <ul class="list-disc pl-5 mb-4 space-y-2 text-xs text-slate-700">
+                        <li><strong>"Apakah Anda memiliki alergi?"</strong> (Usap tangan kanan gatal dilanjutkan gestur menanyakan kepastian)</li>
+                        <li><strong>"Alergi obat apa?"</strong> (Isyarat minum pil diikuti isyarat gatal, lalu eja nama obat menggunakan alfabet)</li>
+                        <li><strong>"Apakah Anda memiliki diabetes?"</strong> (Sentuhkan ujung telunjuk ke ujung bibir melambangkan rasa manis, lalu tunjuk tubuh)</li>
+                        <li><strong>"Apakah Anda memiliki tekanan darah tinggi?"</strong> (Simulasikan memompa tensimeter lalu rentangkan tangan menunjuk ke atas)</li>
+                        <li><strong>"Apakah pernah dirawat di rumah sakit?"</strong> (Membentuk atap rumah diikuti isyarat berbaring sakit di kasur)</li>
+                        <li><strong>"Apakah pernah operasi?"</strong> (Ibu jari kanan ditarik lurus menyayat permukaan kulit lengan atas)</li>
+                    </ul>
+                `,
+                videoTitle: "Peragaan Screening Riwayat Alergi & Bedah",
+                videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-explaining-treatment-on-tablet-to-patient-40552-large.mp4",
+                videoDesc: "Metode praktis mengorek riwayat hipersensitivitas obat sebelum dokter merilis resep antibiotik atau anestesi.",
+                vocab: [
+                    { word: "Diabetes", desc: "Sentuhkan ujung telunjuk ke ujung bibir melambangkan rasa manis, lalu tunjuk tubuh.", visual: "🍭", usage: "Penting ditanyakan sebelum tindakan bedah/penjahitan luka.", videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-explaining-treatment-on-tablet-to-patient-40552-large.mp4" },
+                    { word: "Hipertensi", desc: "Simulasikan memompa tensimeter lalu rentangkan tangan menunjuk ke atas langit.", visual: "📈", usage: "Indikator risiko stroke dan preeklampsia pada ibu hamil.", videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-explaining-treatment-on-tablet-to-patient-40552-large.mp4" },
+                    { word: "Alergi Obat", desc: "Wajib ditanyakan demi menghindari syok anafilaktik.", visual: "💊", usage: "Wajib ditanyakan demi menghindari syok anafilaktik.", videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-explaining-treatment-on-tablet-to-patient-40552-large.mp4" }
+                ]
+            },
+            {
+                id: 6,
+                title: "Pemeriksaan Fisik",
+                desc: "Instruksi langsung dan taktis saat memeriksa fisik pasien: duduk, berdiri, berbaring, buka mulut, menarik/membuang napas, hingga instruksi rileks.",
+                level: "Menengah",
+                completed: false,
+                quizScore: null,
+                pdfTitle: "Buku Saku Modul 6: Protokol Instruksi Pemeriksaan Fisik",
+                pdfContent: `
+                    <h4 class="font-bold text-slate-900 text-sm mb-2">A. Instruksi Fisik Terarah</h4>
+                    <p class="mb-3">Gunakan isyarat tegas, santun, dan visual agar pasien mengerti instruksi klinis secara cepat saat tindakan auskultasi paru, palpasi abdomen, atau penimbangan berat badan:</p>
+                    
+                    <ul class="list-disc pl-5 mb-4 space-y-1.5 text-xs text-slate-600">
+                        <li><strong>"Tolong duduk."</strong> (Tunjuk kursi lalu tekan telapak tangan mendatar mengarah ke bawah secara halus)</li>
+                        <li><strong>"Tolong berdiri."</strong> (Arahkan kedua telapak tangan terbuka bergerak naik ke atas)</li>
+                        <li><strong>"Tolong berbaring."</strong> (Rapatkan kedua telapak tangan diletakkan di pipi kanan miring melambangkan tidur)</li>
+                        <li><strong>"Buka mulut."</strong> (Tunjuk tidur atau bibir Anda lalu buka mulut lebar diikuti gestur memeriksa menggunakan telunjuk)</li>
+                        <li><strong>"Tarik napas."</strong> (Gerakkan kedua telapak tangan naik dari dada ke atas sambil menarik napas dalam)</li>
+                        <li><strong>"Buang napas."</strong> (Gerakkan kedua tangan turun ke bawah diiringi hembusan napas rileks)</li>
+                        <li><strong>"Angkat tangan."</strong> (Arahkan lengan kanan pasien naik ke atas kepala)</li>
+                        <li><strong>"Jangan bergerak."</strong> (Buka telapak tangan ke depan tanda menyetop, dengan dahi berkerut melambangkan instruksi diam)</li>
+                        <li><strong>"Tolong rileks."</strong> (Buat usapan lembut dari pundak mengarah ke bawah melambangkan kenyamanan)</li>
+                    </ul>
+                `,
+                videoTitle: "Peragaan Instruksi Pemeriksaan Dada & Mulut",
+                videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-talking-to-a-patient-in-the-consulting-room-40562-large.mp4",
+                videoDesc: "Saksikan bagaimana mengomunikasikan instruksi auskultasi paru (tarik napas, tahan, buang) menggunakan stetoskop di ruang periksa.",
+                vocab: [
+                    { word: "Tarik Napas", desc: "Gerakkan kedua telapak tangan naik dari dada ke atas sambil menarik napas dalam.", visual: "🌬️", usage: "Instruksi mutlak sebelum pemeriksaan stetoskop paru.", videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-talking-to-a-patient-in-the-consulting-room-40562-large.mp4" },
+                    { word: "Jangan Bergerak", desc: "Buka telapak tangan ke depan tanda menyetop dengan dahi berkerut tegas.", visual: "🛑", usage: "Menjamin kestabilan saat penjahitan atau USG dilakukan.", videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-explaining-treatment-on-tablet-to-patient-40552-large.mp4" },
+                    { word: "Tolong Rileks", desc: "Buat usapan lembut dari pundak mengarah ke bawah melambangkan kenyamanan.", visual: "😌", usage: "Membantu menenangkan ketegangan otot abdomen pasien saat palpasi.", videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-talking-to-a-patient-in-the-consulting-room-40562-large.mp4" }
+                ]
+            },
+            {
+                id: 7,
+                title: "Diagnosis dan Edukasi",
+                desc: "Pemberitahuan hasil pemeriksaan secara empati, instruksi untuk istirahat cukup (tirah baring), dan pembatasan aktivitas fisik berat.",
+                level: "Lanjut",
+                completed: false,
+                quizScore: null,
+                pdfTitle: "Buku Saku Modul 7: Penyampaian Hasil Diagnosis",
+                pdfContent: `
+                    <h4 class="font-bold text-slate-900 text-sm mb-2">A. Komunikasi Hasil Diagnosis</h4>
+                    <p class="mb-3">Memberikan ketenangan psikis bagi pasien setelah hasil lab atau rontgen keluar dengan etika empati medis tinggi.</p>
+                `,
+                videoTitle: "Peragaan Edukasi Pemulihan Kesehatan",
+                videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-explaining-treatment-on-tablet-to-patient-40552-large.mp4",
+                videoDesc: "Cara menjelaskan istirahat tirah baring (bed rest) bagi pasien pasca infeksi virus.",
+                vocab: [
+                    { word: "Istirahat", desc: "Lipat kedua tangan menyilang di dada, miringkan kepala dengan mata terpejam nyaman.", visual: "😴", usage: "Edukasi non-farmakologi utama untuk memulihkan antibodi.", videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-explaining-treatment-on-tablet-to-patient-40552-large.mp4" }
+                ]
+            },
+            {
+                id: 8,
+                title: "Penggunaan Obat",
+                desc: "Penjelasan aturan konsumsi resep: dosis harian (tiga kali sehari), waktu minum obat (sebelum atau sesudah makan), serta bentuk sediaan.",
+                level: "Lanjut",
+                completed: false,
+                quizScore: null,
+                pdfTitle: "Buku Saku Modul 8: Aturan Resep Obat & Kepatuhan",
+                pdfContent: `
+                    <h4 class="font-bold text-slate-900 text-sm mb-2">A. Kepatuhan Minum Obat</h4>
+                    <p class="mb-3">Memastikan pasien memahami dengan tepat aturan pakai resep antibiotik atau obat kronis lainnya.</p>
+                `,
+                videoTitle: "Penjelasan Aturan Minum Obat",
+                videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-talking-to-a-patient-in-the-consulting-room-40562-large.mp4",
+                videoDesc: "Peragaan mengisyaratkan aturan pakai, sebelum dan setelah makan menggunakan visual piring makan.",
+                vocab: [
+                    { word: "Tiga Kali Sehari", desc: "Angkat 3 jari kanan lalu putar melingkar di atas telapak tangan kiri.", visual: "🕒", usage: "Aturan pakai standard resep antipiretik dan antibiotik.", videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-talking-to-a-patient-in-the-consulting-room-40562-large.mp4" }
+                ]
+            },
+            {
+                id: 9,
+                title: "Informed Consent",
+                desc: "Penjelasan rencana tindakan invasif operatif bedah, komplikasi risiko, serta persetujuan tertulis hukum medis (tanda tangan).",
+                level: "Lanjut",
+                completed: false,
+                quizScore: null,
+                pdfTitle: "Buku Saku Modul 9: Informed Consent & Etika Hukum Medis",
+                pdfContent: `
+                    <h4 class="font-bold text-slate-900 text-sm mb-2">A. Validasi Persetujuan Tindakan Medis</h4>
+                    <p class="mb-3">Memastikan otonomi pasien (autonomy) dihormati penuh tanpa ada keterpaksaan sebelum penandatanganan berkas legal.</p>
+                `,
+                videoTitle: "Penjelasan Informed Consent Operasi Bedah",
+                videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-explaining-treatment-on-tablet-to-patient-40552-large.mp4",
+                videoDesc: "Saksikan bagaimana mengisyaratkan persetujuan operasi bedah secara legal dan santun.",
+                vocab: [
+                    { word: "Tanda Tangan", desc: "Simulasikan memegang pena lalu lakukan coretan garis di atas telapak kiri.", visual: "✍️", usage: "Bukti tertulis otentik persetujuan tindakan medis invasif.", videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-explaining-treatment-on-tablet-to-patient-40552-large.mp4" }
+                ]
+            }
+        ];
+
+        // --- STREAMING_CHUNK: Integrating video-based evaluation questions ---
+        // MULTIPLE CHOICE QUESTION DATASET FOR ALL 9 MODULES (ALL ARE VIDEO-BASED EVALUATIONS)
+        const quizQuestionsSet = {
+            1: [
+                { 
+                    q: "Apa kalimat sapaan awal pembuka yang diucapkan tenaga kesehatan dalam video demonstrasi di atas?", 
+                    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-talking-to-a-patient-in-the-consulting-room-40562-large.mp4",
+                    options: ["Halo, nama saya Budi", "Selamat pagi. Halo, saya Dokter. Saya ingin membantu Anda.", "Berapa umur Anda sekarang?", "Silakan tunggu di luar ruang tunggu."], 
+                    correct: 1 
+                },
+                { 
+                    q: "Perhatikan peragaan isyarat jari nakes di video. Huruf/angka apa yang sedang dieja untuk mencatat data awal medis?", 
+                    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-explaining-treatment-on-tablet-to-patient-40552-large.mp4",
+                    options: ["Alfabet 'D-O-K-T-E-R'", "Nama faskes 'K-E-M-E-N-K-E-S'", "Ejaan inisial rekam medis dan angka registrasi dasar", "Alergi obat spesifik."], 
+                    correct: 2 
+                }
+            ],
+            2: [
+                { 
+                    q: "Berdasarkan video pemeriksaan registrasi di atas, pertanyaan identitas apa yang sedang diajukan oleh nakes kepada pasien tuli?", 
+                    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-explaining-treatment-on-tablet-to-patient-40552-large.mp4",
+                    options: ["Apakah Anda memiliki BPJS?", "Nama Anda siapa? Umur Anda berapa?", "Di mana apotek terdekat?", "Apakah Anda mau disuntik?"], 
+                    correct: 1 
+                },
+                { 
+                    q: "Nakes menyatukan kedua tangan berdampingan lalu menggerakkan beriringan di video. Apa maksud pertanyaan tersebut?", 
+                    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-talking-to-a-patient-in-the-consulting-room-40562-large.mp4",
+                    options: ["Apakah Anda mau obat sirup?", "Apakah Anda datang sendiri atau bersama pendamping?", "Kapan Anda tidur tadi malam?", "Silakan berbaring telentang."], 
+                    correct: 1 
+                }
+            ],
+            3: [
+                { 
+                    q: "Perhatikan video anamnesis berikut. Keluhan utama klinis apa yang sedang ditelusuri oleh dokter?", 
+                    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-talking-to-a-patient-in-the-consulting-room-40562-large.mp4",
+                    options: ["Sakit perut parah", "Apa keluhan utama Anda? Sakit di bagian mana?", "Apakah Anda punya alergi obat?", "Apakah Anda membawa surat rujukan?"], 
+                    correct: 1 
+                },
+                { 
+                    q: "Dokter membuat gerakan mengetuk pergelangan tangan lalu melambai ke belakang bahu dalam video. Apa maksud klinis gerakan ini?", 
+                    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-explaining-treatment-on-tablet-to-patient-40552-large.mp4",
+                    options: ["Berapa kali Anda makan sehari?", "Sejak kapan keluhan rasa sakit ini muncul?", "Berapa dosis obat hipertensi Anda?", "Silakan kembali minggu depan."], 
+                    correct: 1 
+                }
+            ],
+            4: [
+                { 
+                    q: "Pasien memegang dadanya dengan ekspresi napas terengah-engah dalam demonstrasi video. Gejala apa yang dikeluhkan?", 
+                    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-talking-to-a-patient-in-the-consulting-room-40562-large.mp4",
+                    options: ["Diare akut", "Sesak napas / nyeri dada", "Sakit kepala migrain", "Pegal-pegal linu"], 
+                    correct: 1 
+                },
+                { 
+                    q: "Nakes menyentuhkan punggung tangan ke dahi sambil mengernyit di video. Skrining gejala apa yang dilakukan?", 
+                    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-explaining-treatment-on-tablet-to-patient-40552-large.mp4",
+                    options: ["Nyeri lambung kronis", "Apakah Anda sedang mengalami demam?", "Apakah Anda mengalami gangguan pendengaran?", "Apakah Anda mual muntah?"], 
+                    correct: 1 
+                }
+            ],
+            5: [
+                { 
+                    q: "Dokter menyimbolkan gerakan mengusap tangan gatal diikuti isyarat minum pil dalam video. Apa riwayat yang sedang dilacak?", 
+                    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-explaining-treatment-on-tablet-to-patient-40552-large.mp4",
+                    options: ["Riwayat penyakit asma", "Apakah Anda memiliki alergi terhadap obat tertentu?", "Riwayat kecelakaan lalu lintas", "Riwayat penyakit tuberkulosis"], 
+                    correct: 1 
+                },
+                { 
+                    q: "Nakes melakukan gerakan menyayat permukaan lengan atas menggunakan ibu jari di video. Riwayat tindakan apa yang ditanyakan?", 
+                    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-talking-to-a-patient-in-the-consulting-room-40562-large.mp4",
+                    options: ["Riwayat imunisasi BCG", "Apakah Anda pernah menjalani operasi / pembedahan?", "Riwayat rawat inap karena tifus", "Riwayat donor darah mandiri"], 
+                    correct: 1 
+                }
+            ],
+            6: [
+                { 
+                    q: "Perhatikan video instruksi pemeriksaan fisik ini. Tindakan apa yang diminta oleh dokter kepada pasien?", 
+                    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-talking-to-a-patient-in-the-consulting-room-40562-large.mp4",
+                    options: ["Buka mulut Anda lebar-lebar", "Tolong tarik napas dalam, lalu buang napas perlahan", "Silakan berdiri untuk ditimbang", "Angkat lengan kiri Anda"], 
+                    correct: 1 
+                },
+                { 
+                    q: "Nakes mengangkat telapak tangan lurus menghadap depan dengan ekspresi dahi berkerut tegas di video. Apa instruksinya?", 
+                    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-explaining-treatment-on-tablet-to-patient-40552-large.mp4",
+                    options: ["Silakan rileks saja", "Jangan bergerak selama tindakan medis berlangsung", "Tolong berbaring di tempat tidur", "Silakan tanda tangan berkas ini"], 
+                    correct: 1 
+                }
+            ],
+            7: [
+                { 
+                    q: "Berdasarkan video edukasi pemulihan di atas, apa anjuran pemulihan non-farmakologi yang diisyaratkan nakes?", 
+                    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-explaining-treatment-on-tablet-to-patient-40552-large.mp4",
+                    options: ["Minum air putih hangat sebanyak mungkin", "Istirahat tirah baring (bed rest) secara cukup", "Mengurangi asupan garam harian", "Melakukan olahraga kardio ringan"], 
+                    correct: 1 
+                }
+            ],
+            8: [
+                { 
+                    q: "Perhatikan peragaan aturan pakai resep di video. Bagaimana dokter mengomunikasikan dosis obat tersebut?", 
+                    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-talking-to-a-patient-in-the-consulting-room-40562-large.mp4",
+                    options: ["Minum satu tablet tiap sebelum tidur", "Aturan konsumsi resep: tiga kali sehari setelah makan", "Minum obat dua kali sehari saja", "Gunakan salep tipis tiap pagi hari"], 
+                    correct: 1 
+                }
+            ],
+            9: [
+                { 
+                    q: "Nakes mensimulasikan coretan di telapak tangan kiri menggunakan jari telunjuk dalam video. Prosedur persetujuan apa yang divalidasi?", 
+                    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-doctor-explaining-treatment-on-tablet-to-patient-40552-large.mp4",
+                    options: ["Pembayaran jaminan asuransi", "Penandatanganan lembar persetujuan tindakan medis (Informed Consent)", "Pengambilan nomor antrean apotek", "Pengisian lembar kuesioner faskes"], 
+                    correct: 1 
+                }
+            ]
+        };
+
+        // --- STREAMING_CHUNK: Setting up dialogue simulation datasets ---
+        const simulationScenarios = {
+            intro: {
+                patientName: "Arif (Pasien Tuli)",
+                initialSign: "PERKENALAN SAYA TULI",
+                understandingPercent: 50,
+                responses: [
+                    {
+                        text: "Lambaikan tangan ramah, kontak mata penuh, lalu isyaratkan: 'SAYA DOKTER, SIAP BANTU' (Tunjuk diri, peragakan stetoskop, dorong kedua tangan ke depan)",
+                        correct: true,
+                        feedbackTitle: "Langkah Membangun Rapport Sempurna!",
+                        feedbackDesc: "Perkenalan diri yang jelas dengan isyarat yang hangat secara instan mengondisikan rasa aman, menurunkan kecemasan pasien, dan membuka pintu komunikasi visual yang efektif.",
+                        impact: 40
+                    },
+                    {
+                        text: "Langsung menunduk menulis berkas rekam medis tanpa melihat wajah pasien",
+                        correct: false,
+                        feedbackTitle: "Hambatan Sikap Klinis!",
+                        feedbackDesc: "Mengabaikan kontak mata awal dapat merusak relasi kepercayaan klinis (respect) dan membuat pasien tuli merasa diabaikan hak otonominya.",
+                        impact: -25
+                    }
+                ]
+            },
+            anamnesis: {
+                patientName: "Budi (Pasien Tuli)",
+                initialSign: "SAYA SAKIT KEPALA",
+                understandingPercent: 40,
+                responses: [
+                    {
+                        text: "Membalas dengan senyuman hangat, lalu isyaratkan: 'SAKIT SEJAK KAPAN?' (Tunjuk pergelangan lalu kibas belakang)",
+                        correct: true,
+                        feedbackTitle: "Langkah Sempurna (Beneficence)!",
+                        feedbackDesc: "Respons ini mencerminkan empati medis yang sangat baik dan secara instan mencari onset nyeri untuk diagnosis klinis akurat. Pemahaman pasien meningkat pesat.",
+                        impact: 30
+                    },
+                    {
+                        text: "Menulis resep pusing di kertas secara terburu-buru tanpa memandang mata pasien sama sekali",
+                        correct: false,
+                        feedbackTitle: "Salah Etika Medis!",
+                        feedbackDesc: "Mengabaikan kontak visual dan menolak berkomunikasi adalah bentuk pelanggaran etika rasa hormat (respect) pada hak otonom pasien disabilitas rungu.",
+                        impact: -20
+                    }
+                ]
+            },
+            physical: {
+                patientName: "Siti (Pasien Tuli)",
+                initialSign: "DADA SESAK NYERI",
+                understandingPercent: 50,
+                responses: [
+                    {
+                        text: "Lakukan isyarat: 'PERIKSA' (Jari V dari mata ke dada) diikuti instruksi 'TARIK NAPAS' (Tangan naik ke atas perlahan)",
+                        correct: true,
+                        feedbackTitle: "Sangat Profesional!",
+                        feedbackDesc: "Menggunakan isyarat penuntun fisik yang tepat membantu pasien merasa nyaman dan mengerti instruksi auskultasi paru tanpa kebingungan fisik.",
+                        impact: 40
+                    },
+                    {
+                        text: "Langsung menempelkan stetoskop dingin secara tiba-tiba tanpa isyarat pemberitahuan apa pun",
+                        correct: false,
+                        feedbackTitle: "Melanggar Keamanan Pasien!",
+                        feedbackDesc: "Tindakan pemeriksaan mendadak tanpa informed consent visual awal melanggar hak otonomi kenyamanan tubuh pasien.",
+                        impact: -25
+                    }
+                ]
+            },
+            education: {
+                patientName: "Rian (Pasien Tuli)",
+                initialSign: "SAYA SUDAH SEHAT? BOLEH KERJA LAGI?",
+                understandingPercent: 30,
+                responses: [
+                    {
+                        text: "Isyaratkan: 'BELUM SEHAT, HARUS ISTIRAHAT' (Kedua tangan menyilang di dada, memejamkan mata)",
+                        correct: true,
+                        feedbackTitle: "Konseling Hebat!",
+                        feedbackDesc: "Instruksi yang tegas namun dikemas secara ramah dan visual mencegah pasien memaksakan diri bekerja sebelum masa pemulihan klinis selesai.",
+                        impact: 50
+                    },
+                    {
+                        text: "Mengangguk-angguk saja karena terburu-buru menangani antrean pasien lain",
+                        correct: false,
+                        feedbackTitle: "Sangat Berbahaya!",
+                        feedbackDesc: "Mengangguk tanpa memahami maksud pasien dapat mengakibatkan pasien pulang dan bekerja berat, berisiko memicu relaps penyakit.",
+                        impact: -30
+                    }
+                ]
+            },
+            consent: {
+                patientName: "Aris (Pasien Tuli)",
+                initialSign: "SAYA HARUS OPERASI BEDAH?",
+                understandingPercent: 40,
+                responses: [
+                    {
+                        text: "Isyaratkan: 'OPERASI' (Ibu jari menyayat lengan) diikuti gestur 'TANDA TANGAN SETUJU' (Coretan di telapak kiri)",
+                        correct: true,
+                        feedbackTitle: "Informed Consent Sukses!",
+                        feedbackDesc: "Tindakan operasi bedah wajib didahului oleh pemahaman utuh mengenai rencana pembedahan dan penandatanganan legalitas persetujuan medis tertulis.",
+                        impact: 45
+                    },
+                    {
+                        text: "Menyodorkan kertas kosong tanpa penjelasan lalu menunjuk-nunjuk paksa pulpen ke tangan pasien",
+                        correct: false,
+                        feedbackTitle: "Malpraktik Hukum Medis!",
+                        feedbackDesc: "Memaksa pasien menandatangi formulir tanpa pemahaman visual merupakan pelanggaran berat aspek informed consent (autonomy).",
+                        impact: -35
+                    }
+                ]
+            }
+        };
+
+        // --- STREAMING_CHUNK: Defining state models and global engine configs ---
+        // GLOBAL APPLICATION STATE
+        let appState = {
+            modules: JSON.parse(localStorage.getItem('medisign_v5_modules')) || initialModules,
+            activeRole: 'doctor', 
+            activeModule: null,
+            activeDetailTab: 'video', 
+            currentQuiz: {
+                moduleId: null,
+                questions: [],
+                currentIndex: 0,
+                answers: {},
+                timerVal: 300,
+                timerInterval: null
+            },
+            activeSimulation: {
+                scenarioId: 'intro',
+                understanding: 50,
+                feedbackActive: false
+            }
+        };
+
+        // --- INITIAL ENGINE START ---
+        window.onload = function() {
+            renderModulesGrid();
+            populateAdminDropdowns();
+            populateAdminDictWordDropdown();
+            renderAdminLogsTable();
+            initAdminChartJS();
+            updateUserDashboardStats();
+        };
+
+        // --- NAVIGATION ROUTING SYSTEM ---
+        function switchView(viewId) {
+            document.querySelectorAll('.view-section').forEach(sec => {
+                sec.classList.add('hidden');
+            });
+            const target = document.getElementById(`view-${viewId}`);
+            if (target) {
+                target.classList.remove('hidden');
+            }
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-sky-50', 'text-sky-700');
+                btn.classList.add('text-slate-700');
+            });
+            const navBtn = document.getElementById(`nav-${viewId}`);
+            if (navBtn) {
+                navBtn.classList.remove('text-slate-700');
+                navBtn.classList.add('bg-sky-50', 'text-sky-700');
+            }
+
+            if (viewId !== 'quiz-frame' && appState.currentQuiz.timerInterval) {
+                clearInterval(appState.currentQuiz.timerInterval);
+                const quizVid = document.getElementById('quiz-video-player');
+                if (quizVid) quizVid.pause();
+            }
+
+            if (viewId === 'dictionary') {
+                filterDictionarySearch();
+            } else if (viewId === 'patient-simulation') {
+                initiateSimulationScenario();
+            } else if (viewId === 'user-dashboard') {
+                updateUserDashboardStats();
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        }
+
+        function scrollToElement(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // --- STREAMING_CHUNK: Implementing user role switches ---
+        function changeRole(role) {
+            appState.activeRole = role;
+            const docBtn = document.getElementById('role-doctor-btn');
+            const admBtn = document.getElementById('role-admin-btn');
+
+            if (role === 'admin') {
+                admBtn.className = "px-3 py-1.5 text-xs font-bold rounded-md transition-all bg-white text-sky-700 shadow-sm";
+                docBtn.className = "px-3 py-1.5 text-xs font-bold rounded-md transition-all text-slate-600 hover:text-slate-800";
+                switchView('admin-panel');
+                showAlertNotification("Akses Admin Aktif", "Anda berada dalam mode pengelolaan berkas, kuis, dan pemantauan aktivitas belajar.", "info");
+            } else {
+                docBtn.className = "px-3 py-1.5 text-xs font-bold rounded-md transition-all bg-white text-sky-700 shadow-sm";
+                admBtn.className = "px-3 py-1.5 text-xs font-bold rounded-md transition-all text-slate-600 hover:text-slate-800";
+                switchView('home');
+                showAlertNotification("Akses Tenaga Medis Aktif", "Anda kembali ke mode kurikulum pembelajaran BISINDO Medis.", "success");
+            }
+        }
+
+        // --- GRID OF MODULES IN LEARNING PATH (9 MODULES SEQUENTIAL RENDERING) ---
+        function renderModulesGrid() {
+            const grid = document.getElementById('modules-container-grid');
+            grid.innerHTML = '';
+
+            let previousModuleCompleted = true; 
+
+            appState.modules.forEach((mod, index) => {
+                const isLocked = !previousModuleCompleted;
+                
+                let difficultyBadgeColor = "bg-slate-100 text-slate-700 border-slate-200";
+                if (mod.level === "Dasar") difficultyBadgeColor = "bg-emerald-50 text-emerald-700 border-emerald-100";
+                else if (mod.level === "Menengah") difficultyBadgeColor = "bg-sky-50 text-sky-700 border-sky-100";
+                else if (mod.level === "Lanjut") difficultyBadgeColor = "bg-indigo-50 text-indigo-700 border-indigo-100";
+
+                const cardHTML = `
+                    <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col h-full ${isLocked ? 'locked-module' : 'group'}">
+                        <div class="p-5 flex-grow space-y-4">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="px-2.5 py-1 rounded-md text-[9px] font-extrabold uppercase tracking-wider border ${difficultyBadgeColor}">
+                                    Level: ${mod.level}
+                                </span>
+                                ${mod.completed ? 
+                                    `<span class="text-emerald-600 text-xs font-bold flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Lulus</span>` : 
+                                    (isLocked ? `<span class="text-slate-400 text-xs font-semibold"><i class="fa-solid fa-lock mr-1"></i> Terkunci</span>` : `<span class="text-sky-500 text-xs font-semibold">Siap Belajar</span>`)
+                                }
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 ${!isLocked ? 'group-hover:text-sky-600' : ''} transition-colors text-base line-clamp-1">Modul ${mod.id}: ${mod.title}</h3>
+                                <p class="text-xs text-slate-500 mt-2 leading-relaxed line-clamp-3">${mod.desc}</p>
+                            </div>
+                            <div class="flex items-center gap-4 text-[11px] text-slate-400 pt-2 border-t border-slate-100">
+                                <span><i class="fa-solid fa-book-open-reader mr-1"></i> Modul Evaluasi</span>
+                                ${mod.quizScore ? `<span><i class="fa-solid fa-star text-amber-500 mr-1"></i> Skor: ${mod.quizScore}</span>` : ''}
+                            </div>
+                        </div>
+                        <div class="p-4 bg-slate-50 border-t border-slate-150">
+                            ${isLocked ? 
+                                `<button disabled class="w-full py-2 bg-slate-200 text-slate-400 font-bold rounded-xl text-xs cursor-not-allowed">Selesaikan Modul ${mod.id - 1} Terlebih Dahulu</button>` : 
+                                `<button onclick="openModuleDetail(${mod.id})" class="w-full py-2 bg-white hover:bg-sky-50 border border-slate-200 hover:border-sky-300 text-slate-700 hover:text-sky-700 font-bold rounded-xl text-xs transition-all shadow-sm flex items-center justify-center gap-1.5">
+                                    <span>Mulai Materi</span> <i class="fa-solid fa-chevron-right text-[9px]"></i>
+                                </button>`
+                            }
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += cardHTML;
+                
+                previousModuleCompleted = mod.completed;
+            });
+
+            updateLearningPathStepIndicators();
+        }
+
+        // Track learning path steps dynamically
+        function updateLearningPathStepIndicators() {
+            const hasDasar = appState.modules.slice(0, 3).every(m => m.completed);
+            const hasMenengah = appState.modules.slice(3, 6).every(m => m.completed);
+            const hasLanjut = appState.modules.slice(6, 9).every(m => m.completed);
+
+            if (hasDasar) {
+                document.getElementById('path-step-mid').classList.remove('opacity-60', 'bg-slate-50');
+                document.getElementById('path-step-mid').classList.add('bg-white');
+                document.getElementById('path-step-mid-num').className = "w-10 h-10 bg-sky-600 text-white rounded-lg flex items-center justify-center font-bold";
+            }
+            if (hasMenengah) {
+                document.getElementById('path-step-adv').classList.remove('opacity-60', 'bg-slate-50');
+                document.getElementById('path-step-adv').classList.add('bg-white');
+                document.getElementById('path-step-adv-num').className = "w-10 h-10 bg-sky-600 text-white rounded-lg flex items-center justify-center font-bold";
+            }
+            if (hasLanjut) {
+                document.getElementById('path-step-cert').classList.remove('opacity-60', 'bg-slate-50');
+                document.getElementById('path-step-cert').classList.add('bg-white');
+                document.getElementById('path-step-cert-num').className = "w-10 h-10 bg-emerald-600 text-white rounded-lg flex items-center justify-center font-bold";
+            }
+        }
+
+        // --- STREAMING_CHUNK: Opening detailed module viewer with custom graphics upload ---
+        // --- OPEN MODULE DETAIL VIEW ---
+        function openModuleDetail(moduleId) {
+            const mod = appState.modules.find(m => m.id === moduleId);
+            if (!mod) return;
+
+            appState.activeModule = mod;
+            switchView('module-detail');
+
+            document.getElementById('module-detail-level-badge').innerHTML = `Level: ${mod.level}`;
+            document.getElementById('module-detail-title').innerHTML = `Modul ${mod.id}: ${mod.title}`;
+            document.getElementById('module-detail-desc').innerHTML = mod.desc;
+
+            const videoFrame = document.getElementById('detail-video-player-frame');
+            videoFrame.src = mod.videoUrl;
+            document.getElementById('detail-video-title').innerHTML = mod.videoTitle;
+            document.getElementById('detail-video-desc').innerHTML = mod.videoDesc;
+
+            // Render PDF text content inside visualizer
+            const pdfVisualizer = document.getElementById('detail-pdf-visualizer');
+            pdfVisualizer.innerHTML = mod.pdfContent;
+
+            // DYNAMIC UPLOADED IMAGE RENDERER inside PDF View
+            if (mod.pdfImage) {
+                const imgAltText = mod.id === 1 ? "Poster Isyarat Huruf dan Angka BISINDO" : "Gambar Panduan Tambahan";
+                pdfVisualizer.innerHTML += `
+                    <div class="my-5 p-3 bg-slate-50 border border-slate-200 rounded-2xl text-center shadow-inner">
+                        <img src="${mod.pdfImage}" alt="${imgAltText}" class="mx-auto rounded-xl shadow-md max-w-full h-auto border border-slate-200 transition-all hover:scale-[1.01]" onerror="this.onerror=null; this.src='https://placehold.co/600x850/e2e8f0/475569?text=Poster+Panduan+BISINDO';">
+                        <p class="text-[10px] text-slate-500 font-semibold mt-3 tracking-wide"><i class="fa-solid fa-image mr-1"></i> Gambar: ${imgAltText}</p>
+                    </div>
+                `;
+            }
+
+            document.getElementById('detail-sidebar-score').innerHTML = mod.quizScore ? `${mod.quizScore} / 100` : `- / 100`;
+            const bar = document.getElementById('detail-sidebar-progress-bar');
+            const badge = document.getElementById('detail-sidebar-status');
+            
+            if (mod.completed) {
+                badge.innerHTML = "Selesai & Lulus";
+                badge.className = "px-2.5 py-1 rounded-md text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-100";
+                bar.style.width = "100%";
+            } else {
+                badge.innerHTML = "Belum Mengikuti";
+                badge.className = "px-2.5 py-1 rounded-md text-xs font-bold bg-amber-50 text-amber-700 border border-amber-100";
+                bar.style.width = "30%";
+            }
+
+            setDetailActiveTab('video');
+        }
+
+        function setDetailActiveTab(tabId) {
+            appState.activeDetailTab = tabId;
+            document.querySelectorAll('.module-tab-pane').forEach(p => p.classList.add('hidden'));
+            document.querySelectorAll('[id^="tab-btn-"]').forEach(b => {
+                b.className = "flex-grow text-center py-2.5 px-4 rounded-lg text-xs md:text-sm font-semibold transition-all text-slate-600 hover:bg-slate-100";
+            });
+
+            document.getElementById(`tab-pane-${tabId}`).classList.remove('hidden');
+            document.getElementById(`tab-btn-${tabId}`).className = "flex-grow text-center py-2.5 px-4 rounded-lg text-xs md:text-sm font-semibold transition-all bg-sky-600 text-white";
+        }
+
+        function simulatePDFDownload() {
+            showAlertNotification("Dokumen Saku Diunduh", `Syllabus '${appState.activeModule.pdfTitle}' telah berhasil diunduh ke direktori penyimpanan lokal Anda.`, "success");
+        }
+
+        // --- STREAMING_CHUNK: Managing video quiz mechanics ---
+        // --- QUIZ & EVALUATION EXECUTOR ENGINE ---
+        function triggerQuizStart() {
+            const modId = appState.activeModule.id;
+            const questions = quizQuestionsSet[modId];
+
+            if (!questions || questions.length === 0) {
+                showAlertNotification("Kuis Belum Tersedia", "Materi kuis untuk modul ini sedang divalidasi oleh Komite Kurikulum.", "info");
+                return;
+            }
+
+            appState.currentQuiz.moduleId = modId;
+            appState.currentQuiz.questions = questions;
+            appState.currentQuiz.currentIndex = 0;
+            appState.currentQuiz.answers = {};
+            appState.currentQuiz.timerVal = 300; 
+
+            switchView('quiz-frame');
+            document.getElementById('quiz-title-header').innerHTML = `Evaluasi Modul ${modId}: ${appState.activeModule.title}`;
+
+            if (appState.currentQuiz.timerInterval) clearInterval(appState.currentQuiz.timerInterval);
+            appState.currentQuiz.timerInterval = setInterval(() => {
+                appState.currentQuiz.timerVal--;
+                const minutes = Math.floor(appState.currentQuiz.timerVal / 60);
+                const seconds = appState.currentQuiz.timerVal % 60;
+                document.getElementById('quiz-timer-span').innerHTML = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+
+                if (appState.currentQuiz.timerVal <= 0) {
+                    clearInterval(appState.currentQuiz.timerInterval);
+                    evaluateQuizSubmission();
+                }
+            }, 1000);
+
+            renderActiveQuizQuestion();
+        }
+
+        function renderActiveQuizQuestion() {
+            const currentQ = appState.currentQuiz.questions[appState.currentQuiz.currentIndex];
+            document.getElementById('quiz-progress-label').innerHTML = `Pertanyaan ${appState.currentQuiz.currentIndex + 1} dari ${appState.currentQuiz.questions.length}`;
+            document.getElementById('quiz-question-text').innerHTML = currentQ.q;
+
+            // Load Video Question dynamic source
+            const quizVidPlayer = document.getElementById('quiz-video-player');
+            if (currentQ.videoUrl) {
+                document.getElementById('quiz-video-container').classList.remove('hidden');
+                quizVidPlayer.src = currentQ.videoUrl;
+                quizVidPlayer.load();
+                quizVidPlayer.play().catch(() => {});
+            } else {
+                document.getElementById('quiz-video-container').classList.add('hidden');
+                quizVidPlayer.pause();
+            }
+
+            const choicesBox = document.getElementById('quiz-choices-box');
+            choicesBox.innerHTML = '';
+
+            currentQ.options.forEach((opt, idx) => {
+                const isSelected = appState.currentQuiz.answers[appState.currentQuiz.currentIndex] === idx;
+                const optHTML = `
+                    <button onclick="selectQuizAnswerOption(${idx})" class="w-full text-left p-4 rounded-xl border text-xs md:text-sm transition-all flex items-center justify-between ${
+                        isSelected ? 
+                        'border-sky-600 bg-sky-50 text-sky-900 font-bold shadow-sm' : 
+                        'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                    }">
+                        <span>${opt}</span>
+                        ${isSelected ? `<i class="fa-solid fa-circle-check text-sky-600"></i>` : `<i class="fa-regular fa-circle text-slate-300"></i>`}
+                    </button>
+                `;
+                choicesBox.innerHTML += optHTML;
+            });
+
+            document.getElementById('quiz-prev-btn').disabled = appState.currentQuiz.currentIndex === 0;
+            const nextBtn = document.getElementById('quiz-next-btn');
+            if (appState.currentQuiz.currentIndex === appState.currentQuiz.questions.length - 1) {
+                nextBtn.innerHTML = `Selesai & Kumpul`;
+            } else {
+                nextBtn.innerHTML = `Berikutnya`;
+            }
+        }
+
+        function selectQuizAnswerOption(idx) {
+            appState.currentQuiz.answers[appState.currentQuiz.currentIndex] = idx;
+            renderActiveQuizQuestion();
+        }
+
+        function quizPrevQuestion() {
+            if (appState.currentQuiz.currentIndex > 0) {
+                appState.currentQuiz.currentIndex--;
+                renderActiveQuizQuestion();
+            }
+        }
+
+        function quizNextQuestion() {
+            if (appState.currentQuiz.currentIndex < appState.currentQuiz.questions.length - 1) {
+                appState.currentQuiz.currentIndex++;
+                renderActiveQuizQuestion();
+            } else {
+                evaluateQuizSubmission();
+            }
+        }
+
+        // --- STREAMING_CHUNK: Processing evaluations scores and saving data ---
+        // --- EVALUATE SUBMITTED ANSWERS ---
+        function evaluateQuizSubmission() {
+            clearInterval(appState.currentQuiz.timerInterval);
+            const quizVidPlayer = document.getElementById('quiz-video-player');
+            if (quizVidPlayer) quizVidPlayer.pause();
+
+            let correctCount = 0;
+            const totalQuestions = appState.currentQuiz.questions.length;
+
+            appState.currentQuiz.questions.forEach((q, idx) => {
+                if (appState.currentQuiz.answers[idx] === q.correct) {
+                    correctCount++;
+                }
+            });
+
+            const score = Math.round((correctCount / totalQuestions) * 100);
+            const activeId = appState.currentQuiz.moduleId;
+
+            const targetMod = appState.modules.find(m => m.id === activeId);
+            if (targetMod) {
+                targetMod.quizScore = score;
+                if (score >= 80) {
+                    targetMod.completed = true;
+                }
+                localStorage.setItem('medisign_v5_modules', JSON.stringify(appState.modules));
+            }
+
+            switchView('quiz-result');
+            document.getElementById('quiz-result-score-val').innerHTML = `${score}<span class="text-lg text-slate-400 font-bold">/100</span>`;
+
+            const icon = document.getElementById('quiz-result-icon');
+            const title = document.getElementById('quiz-result-title');
+            const subtitle = document.getElementById('quiz-result-subtitle');
+            const certBtn = document.getElementById('quiz-cert-button');
+
+            // Check if ALL 9 modules are completed
+            const allModulesCompleted = appState.modules.every(m => m.completed);
+
+            if (score >= 80) {
+                icon.className = "w-20 h-20 bg-emerald-100 border-4 border-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-3xl shadow-inner";
+                icon.innerHTML = `<i class="fa-solid fa-circle-check"></i>`;
+                title.innerHTML = "Selamat, Anda Lulus Kuis!";
+                subtitle.innerHTML = `Anda telah melampaui ambang kelulusan kompetensi dasar untuk modul <strong>"${targetMod.title}"</strong>.`;
+                
+                // Show master certificate button only when all modules are finished
+                if (allModulesCompleted) {
+                    certBtn.classList.remove('hidden');
+                    certBtn.innerHTML = `<i class="fa-solid fa-medal"></i> Cetak Sertifikat Kelulusan Utama`;
+                } else {
+                    certBtn.classList.add('hidden');
+                }
+            } else {
+                icon.className = "w-20 h-20 bg-rose-100 border-4 border-rose-50 text-rose-600 rounded-full flex items-center justify-center mx-auto text-3xl shadow-inner";
+                icon.innerHTML = `<i class="fa-solid fa-circle-xmark"></i>`;
+                title.innerHTML = "Belum Melampaui Nilai Kelulusan";
+                subtitle.innerHTML = "Ambang batas kelulusan untuk modul berstandar Kemenkes adalah 80. Silakan ulas kembali panduan saku dan coba lagi.";
+                certBtn.classList.add('hidden');
+            }
+
+            renderModulesGrid();
+            renderAdminLogsTable();
+            updateUserDashboardStats();
+            updateAdminChartMetrics();
+        }
+
+        // --- STREAMING_CHUNK: Drawing canvas certificates dynamically ---
+        // --- CANVAS CERTIFICATE RENDERER & DOWNLOADER ---
+        function renderAndDownloadCertificate() {
+            const canvas = document.getElementById('hidden-certificate-canvas');
+            const ctx = canvas.getContext('2d');
+            const docName = "dr. Fitra Ramadhan, Sp.A";
+            const serialNo = `CERT-MEDISIGN-MASTER-${Math.floor(10000 + Math.random() * 90000)}`;
+
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, 1200, 850);
+
+            ctx.lineWidth = 15;
+            ctx.strokeStyle = '#0284c7'; 
+            ctx.strokeRect(20, 20, 1160, 810);
+            
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#10b981'; 
+            ctx.strokeRect(45, 45, 1110, 760);
+
+            ctx.fillStyle = '#0284c7';
+            ctx.fillRect(45, 45, 100, 20);
+            ctx.fillRect(45, 45, 20, 100);
+
+            ctx.fillStyle = '#10b981';
+            ctx.fillRect(1055, 785, 100, 20);
+            ctx.fillRect(1135, 705, 20, 100);
+
+            ctx.font = 'bold 36px Georgia';
+            ctx.fillStyle = '#0f172a';
+            ctx.textAlign = 'center';
+            ctx.fillText('M E D I S I G N', 600, 130);
+
+            ctx.font = 'bold 11px Arial';
+            ctx.fillStyle = '#64748b';
+            ctx.fillText('MEDICAL SIGN LANGUAGE FOR INCLUSIVE HEALTHCARE', 600, 155);
+
+            ctx.font = 'bold 40px Arial';
+            ctx.fillStyle = '#0f172a';
+            ctx.fillText('SERTIFIKAT KELULUSAN UTAMA', 600, 240);
+
+            ctx.font = 'italic 16px Georgia';
+            ctx.fillStyle = '#475569';
+            ctx.fillText('Diberikan dengan hormat kepada Tenaga Kesehatan Profesional:', 600, 310);
+
+            ctx.font = 'bold 32px Arial';
+            ctx.fillStyle = '#0284c7';
+            ctx.fillText(docName, 600, 375);
+
+            ctx.font = '15px Arial';
+            ctx.fillStyle = '#334155';
+            ctx.fillText('Telah dinyatakan LULUS uji kompetensi keprofesian komunikasi inklusif bahasa isyarat BISINDO klinis:', 600, 440);
+
+            ctx.font = 'bold 22px Arial';
+            ctx.fillStyle = '#0f172a';
+            ctx.fillText('KURIKULUM LENGKAP BISINDO MEDIS (9 MODUL KLINIS)', 600, 490);
+
+            ctx.font = 'italic 12px Arial';
+            ctx.fillStyle = '#64748b';
+            ctx.fillText('Kurikulum terstandardisasi pendukung sistem pembelajaran inklusif nasional', 600, 530);
+
+            ctx.font = '11px Courier New';
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillText(`No Registrasi: ${serialNo} | ID Nakes: NAKES-2026-403`, 600, 570);
+
+            // QR Code Simulation
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(560, 600, 80, 80);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(570, 610, 60, 60);
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(575, 615, 20, 20);
+            ctx.fillRect(605, 615, 20, 20);
+            ctx.fillRect(575, 645, 20, 20);
+            ctx.fillRect(605, 645, 10, 10);
+            ctx.fillRect(615, 635, 10, 10);
+
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(150, 720);
+            ctx.lineTo(380, 720);
+            ctx.moveTo(820, 720);
+            ctx.lineTo(1050, 720);
+            ctx.stroke();
+
+            ctx.font = 'bold 13px Arial';
+            ctx.fillStyle = '#1e293b';
+            ctx.fillText('Dr. dr. Budiarto, Sp.THT-KL', 265, 745);
+            ctx.font = '11px Arial';
+            ctx.fillStyle = '#64748b';
+            ctx.fillText('Ketua Dewan Pakar MEDISIGN', 265, 765);
+
+            ctx.font = 'bold 13px Arial';
+            ctx.fillStyle = '#1e293b';
+            ctx.fillText('Gerakan Kesejahteraan Tunarungu RI', 935, 745);
+            ctx.font = '11px Arial';
+            ctx.fillStyle = '#64748b';
+            ctx.fillText('Koordinator Verifikasi BISINDO', 935, 765);
+
+            // Simple vector signature design
+            ctx.strokeStyle = '#2563eb';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(210, 690);
+            ctx.bezierCurveTo(230, 670, 280, 670, 270, 710);
+            ctx.bezierCurveTo(260, 720, 310, 700, 320, 680);
+            ctx.stroke();
+
+            const action = document.createElement('a');
+            action.download = `Sertifikat_MEDISIGN_Master.png`;
+            action.href = canvas.toDataURL('image/png');
+            action.click();
+
+            showAlertNotification("Sertifikat Sukses Dicetak", "Sertifikat Utama berformat PNG resolusi tinggi telah diunduh ke komputer Anda.", "success");
+        }
+
+        // --- STREAMING_CHUNK: Performing dictionary search engine lookups ---
+        // --- MEDICAL DICTIONARY GLOBAL RAPID LOOKUP ---
+        function filterDictionarySearch() {
+            const query = document.getElementById('dict-search-input').value.toLowerCase();
+            const container = document.getElementById('dict-results-grid');
+            container.innerHTML = '';
+
+            let masterVocab = [];
+            appState.modules.forEach(m => {
+                m.vocab.forEach(v => {
+                    masterVocab.push({
+                        ...v,
+                        moduleTitle: m.title,
+                        moduleId: m.id
+                    });
+                });
+            });
+
+            const filtered = masterVocab.filter(item => 
+                item.word.toLowerCase().includes(query) || 
+                item.desc.toLowerCase().includes(query)
+            );
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-2 text-center py-12 bg-white rounded-2xl border border-slate-200">
+                        <i class="fa-solid fa-face-frown text-slate-300 text-4xl mb-3"></i>
+                        <h4 class="font-bold text-slate-600 text-sm">Istilah medis tidak ditemukan</h4>
+                        <p class="text-xs text-slate-400 mt-1">Coba kata kunci lain seperti Demam, Sakit, atau Alergi.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(item => {
+                const row = `
+                    <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4 hover:border-emerald-400 transition-all flex flex-col md:flex-row gap-5 items-stretch">
+                        <div class="flex-grow space-y-4">
+                            <div class="flex items-center gap-4">
+                                <div class="w-14 h-14 bg-emerald-50 text-emerald-700 border border-emerald-100 rounded-xl flex items-center justify-center text-3xl shrink-0 shadow-inner select-none">
+                                    ${item.visual}
+                                </div>
+                                <div>
+                                    <h4 class="font-extrabold text-slate-800 text-base md:text-lg">${item.word}</h4>
+                                    <span class="px-2 py-0.5 bg-slate-100 text-slate-500 text-[9px] font-bold uppercase rounded border border-slate-200">Modul ${item.moduleId}: ${item.moduleTitle}</span>
+                                </div>
+                            </div>
+                            <div class="text-xs text-slate-600 space-y-1">
+                                <p class="leading-relaxed"><strong class="text-slate-800">Gerakan Isyarat:</strong> ${item.desc}</p>
+                                <div class="p-3 bg-slate-50 border border-slate-150 rounded-xl text-[11px] text-slate-500 mt-2">
+                                    <span class="font-extrabold text-emerald-700 uppercase block mb-0.5">Konteks Praktik Klinis:</span>
+                                    ${item.usage}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Inline Video Player inside Dictionary Card -->
+                        <div class="w-full md:w-56 shrink-0 flex flex-col justify-center">
+                            ${item.videoUrl ? `
+                                <div class="aspect-video bg-slate-950 rounded-xl overflow-hidden relative shadow-inner border border-slate-200">
+                                    <video src="${item.videoUrl}" controls loop muted class="w-full h-full object-cover"></video>
+                                    <div class="absolute top-2 left-2 bg-black/60 px-2 py-0.5 rounded text-[8px] font-bold text-white tracking-wider uppercase">Video Demo</div>
+                                </div>
+                            ` : `
+                                <div class="h-28 border border-dashed border-slate-200 bg-slate-50 rounded-xl flex flex-col items-center justify-center text-center p-3">
+                                    <i class="fa-solid fa-video-slash text-slate-300 text-xl mb-1"></i>
+                                    <span class="text-[10px] text-slate-400 font-semibold leading-tight">Belum ada video peragaan</span>
+                                </div>
+                            `}
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += row;
+            });
+        }
+
+        // --- CLINICAL SIMULATION OF DEAF PATIENT ---
+        function initiateSimulationScenario() {
+            const scenarioKey = document.getElementById('sim-scenario-selector').value;
+            const scenario = simulationScenarios[scenarioKey];
+            if (!scenario) return;
+
+            appState.activeSimulation.scenarioId = scenarioKey;
+            appState.activeSimulation.understanding = scenario.understandingPercent;
+            appState.activeSimulation.feedbackActive = false;
+
+            document.getElementById('sim-patient-name').innerHTML = scenario.patientName;
+            document.getElementById('sim-patient-bubble-text').innerHTML = `"${scenario.initialSign}"`;
+            document.getElementById('sim-feedback-box').classList.add('hidden');
+
+            const box = document.getElementById('sim-responses-box');
+            box.innerHTML = '';
+
+            scenario.responses.forEach((resp, idx) => {
+                const btn = `
+                    <button onclick="handleSimulationResponseSelect(${idx})" class="w-full text-left p-4 rounded-xl border border-slate-200 bg-white text-xs md:text-sm text-slate-700 hover:border-emerald-400 hover:bg-emerald-50/10 transition-all flex justify-between items-center group">
+                        <span class="font-medium group-hover:text-slate-900 pr-2">${resp.text}</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-300 group-hover:text-emerald-500"></i>
+                    </button>
+                `;
+                box.innerHTML += btn;
+            });
+
+            updateSimulationProgressUI();
+        }
+
+        function handleSimulationResponseSelect(responseIndex) {
+            const scenario = simulationScenarios[appState.activeSimulation.scenarioId];
+            const resp = scenario.responses[responseIndex];
+            if (!resp) return;
+
+            appState.activeSimulation.understanding = Math.max(0, Math.min(100, appState.activeSimulation.understanding + resp.impact));
+
+            const feedbackBox = document.getElementById('sim-feedback-box');
+            const feedbackTitle = document.getElementById('sim-feedback-title');
+            const feedbackDesc = document.getElementById('sim-feedback-desc');
+
+            feedbackBox.classList.remove('hidden');
+            feedbackTitle.innerHTML = resp.feedbackTitle;
+            feedbackDesc.innerHTML = resp.feedbackDesc;
+
+            if (resp.correct) {
+                feedbackBox.className = "mt-6 p-4 rounded-xl border border-emerald-200 bg-emerald-50/30 text-emerald-800 animate-fadeIn";
+            } else {
+                feedbackBox.className = "mt-6 p-4 rounded-xl border border-rose-200 bg-rose-50/30 text-rose-800 animate-fadeIn";
+            }
+
+            updateSimulationProgressUI();
+        }
+
+        function updateSimulationProgressUI() {
+            const pct = appState.activeSimulation.understanding;
+            document.getElementById('sim-understanding-percent').innerHTML = `${pct}%`;
+            document.getElementById('sim-understanding-fill').style.width = `${pct}%`;
+
+            const fill = document.getElementById('sim-understanding-fill');
+            if (pct >= 80) {
+                fill.className = "bg-emerald-500 h-full transition-all duration-500";
+            } else if (pct >= 40) {
+                fill.className = "bg-sky-500 h-full transition-all duration-500";
+            } else {
+                fill.className = "bg-rose-500 h-full transition-all duration-500";
+            }
+        }
+
+        // --- STREAMING_CHUNK: Updating client dashboards data arrays ---
+        // --- USER DASHBOARD STATS CALCULATOR ---
+        function updateUserDashboardStats() {
+            let total = appState.modules.length;
+            let completed = 0;
+
+            appState.modules.forEach(m => {
+                if (m.completed) completed++;
+            });
+
+            const percent = Math.round((completed / total) * 100);
+            document.getElementById('user-dashboard-percent').innerHTML = `${percent}%`;
+
+            const allModulesCompleted = (completed === total);
+            document.getElementById('user-dashboard-certs-count').innerHTML = allModulesCompleted ? "1" : "0";
+
+            const box = document.getElementById('user-dashboard-modules-list');
+            box.innerHTML = '';
+
+            appState.modules.forEach(m => {
+                const row = `
+                    <div class="p-4 border border-slate-200 rounded-xl bg-slate-50/50 flex items-center justify-between gap-4 flex-wrap sm:flex-nowrap">
+                        <div class="flex items-start gap-3">
+                            <div class="mt-0.5 w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${m.completed ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-300'}">
+                                <i class="fa-solid fa-circle-check text-xs"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-sm">Modul ${m.id}: ${m.title}</h4>
+                                <p class="text-[11px] text-slate-400 mt-0.5">${m.level} • ${m.vocab.length} Istilah Klinis</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 justify-between w-full sm:w-auto">
+                            <span class="text-xs font-semibold text-slate-600">${m.quizScore ? `Nilai Kuis: <strong class="text-slate-800 font-extrabold">${m.quizScore}</strong>` : 'Evaluasi belum diikuti'}</span>
+                            <button onclick="openModuleDetail(${m.id})" class="px-4 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold rounded-lg text-xs transition-all shadow-sm shrink-0">
+                                Buka Materi
+                            </button>
+                        </div>
+                    </div>
+                `;
+                box.innerHTML += row;
+            });
+
+            const certBox = document.getElementById('user-dashboard-certificates-grid');
+            certBox.innerHTML = '';
+
+            // Grand unified master certificate layout widget
+            if (allModulesCompleted) {
+                certBox.innerHTML = `
+                    <div class="p-5 border border-emerald-200 bg-emerald-50/10 rounded-2xl text-center space-y-4 shadow-sm animate-fadeIn">
+                        <i class="fa-solid fa-medal text-amber-500 text-5xl animate-bounce"></i>
+                        <div>
+                            <h5 class="text-sm font-extrabold text-slate-800">Sertifikat Kelulusan Utama</h5>
+                            <p class="text-xs text-slate-500 mt-1">Selamat! Anda telah menyelesaikan seluruh 9 modul kurikulum klinis MEDISIGN.</p>
+                        </div>
+                        <button onclick="renderAndDownloadCertificate()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-md transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-download"></i> Unduh Sertifikat Utama
+                        </button>
+                    </div>
+                `;
+            } else {
+                certBox.innerHTML = `
+                    <div class="text-center py-10 border-2 border-dashed border-slate-200 rounded-2xl p-4 bg-slate-50/50">
+                        <i class="fa-solid fa-lock text-slate-300 text-4xl mb-3"></i>
+                        <h5 class="text-xs font-bold text-slate-700">Sertifikat Utama Terkunci</h5>
+                        <p class="text-[10px] text-slate-400 mt-2 leading-relaxed">Selesaikan seluruh 9 modul dengan skor kuis minimal 80 untuk membuka pencetakan Sertifikat Kelulusan Utama.</p>
+                        <div class="mt-4 bg-slate-200 rounded-full h-2 w-full overflow-hidden">
+                            <div class="bg-sky-500 h-full" style="width: ${percent}%"></div>
+                        </div>
+                        <span class="text-[10px] text-slate-400 font-bold block mt-2">PROGRES: ${completed}/9 MODUL</span>
+                    </div>
+                `;
+            }
+        }
+
+        // --- STREAMING_CHUNK: Processing files updates inside admin dashboard ---
+        // --- ADMIN PANEL MANAGEMENT CONTROLS ---
+        function populateAdminDropdowns() {
+            const pdfTarget = document.getElementById('admin-pdf-module-target');
+            const videoTarget = document.getElementById('admin-video-module-target');
+
+            pdfTarget.innerHTML = '';
+            videoTarget.innerHTML = '';
+
+            appState.modules.forEach(m => {
+                const opt = `<option value="${m.id}">Modul ${m.id} - ${m.title}</option>`;
+                pdfTarget.innerHTML += opt;
+                videoTarget.innerHTML += opt;
+            });
+        }
+
+        // Populate dropdown with all vocabulary terms across all modules
+        function populateAdminDictWordDropdown() {
+            const target = document.getElementById('admin-dict-word-target');
+            target.innerHTML = '';
+
+            appState.modules.forEach(m => {
+                m.vocab.forEach(v => {
+                    const opt = `<option value="${v.word}">Modul ${m.id}: ${v.word}</option>`;
+                    target.innerHTML += opt;
+                });
+            });
+        }
+
+        function renderAdminLogsTable() {
+            const body = document.getElementById('admin-log-table-body');
+            body.innerHTML = '';
+
+            appState.modules.forEach(m => {
+                const tr = `
+                    <tr class="hover:bg-slate-50/60 transition-all">
+                        <td class="py-3.5 font-bold text-slate-800">Modul ${m.id}: ${m.title}</td>
+                        <td class="py-3.5"><span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded-md border border-emerald-100">Ready (Panduan Saku)</span></td>
+                        <td class="py-3.5"><span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 text-[10px] font-bold rounded-md border border-indigo-100">Demo Streamable</span></td>
+                    </tr>
+                `;
+                body.innerHTML += tr;
+            });
+        }
+
+        // Handle Admin PDF + Optional Image Upload
+        function handleAdminPDFSubmit(event) {
+            event.preventDefault();
+            const modId = parseInt(document.getElementById('admin-pdf-module-target').value);
+            const title = document.getElementById('admin-pdf-title').value;
+            const content = document.getElementById('admin-pdf-content').value;
+            const imgInput = document.getElementById('admin-pdf-image');
+
+            const target = appState.modules.find(m => m.id === modId);
+            if (target) {
+                target.pdfTitle = title;
+                target.pdfContent = `
+                    <h4 class="font-extrabold text-slate-900 text-sm mb-2">${title}</h4>
+                    <p class="mb-3 leading-relaxed">${content}</p>
+                `;
+
+                // If admin selected an image, create a safe URL object
+                if (imgInput.files && imgInput.files[0]) {
+                    target.pdfImage = URL.createObjectURL(imgInput.files[0]);
+                }
+
+                localStorage.setItem('medisign_v5_modules', JSON.stringify(appState.modules));
+            }
+
+            showAlertNotification("Update PDF & Gambar Sukses", `Panduan saku modul ${modId} berhasil diperbarui di server internal local.`, "success");
+            
+            document.getElementById('admin-pdf-title').value = '';
+            document.getElementById('admin-pdf-content').value = '';
+            imgInput.value = '';
+            renderAdminLogsTable();
+        }
+
+        function handleAdminVideoSubmit(event) {
+            event.preventDefault();
+            const modId = parseInt(document.getElementById('admin-video-module-target').value);
+            const url = document.getElementById('admin-video-url').value || "https://assets.mixkit.co/videos/preview/mixkit-doctor-explaining-treatment-on-tablet-to-patient-40552-large.mp4";
+            const desc = document.getElementById('admin-video-desc').value;
+
+            const target = appState.modules.find(m => m.id === modId);
+            if (target) {
+                target.videoUrl = url;
+                target.videoDesc = desc;
+                localStorage.setItem('medisign_v5_modules', JSON.stringify(appState.modules));
+            }
+
+            showAlertNotification("Update Video Sukses", `Video saku demonstrasi modul ${modId} telah sukses dimuat.`, "success");
+            
+            document.getElementById('admin-video-url').value = '';
+            document.getElementById('admin-video-desc').value = '';
+            renderAdminLogsTable();
+        }
+
+        // Handle dictionary term video upload/update
+        function handleAdminDictVideoSubmit(event) {
+            event.preventDefault();
+            const targetWord = document.getElementById('admin-dict-word-target').value;
+            const videoFile = document.getElementById('admin-dict-video-file');
+            const videoUrlInput = document.getElementById('admin-dict-video-url').value;
+
+            let finalUrl = videoUrlInput;
+
+            if (videoFile.files && videoFile.files[0]) {
+                finalUrl = URL.createObjectURL(videoFile.files[0]);
+            }
+
+            if (!finalUrl) {
+                showAlertNotification("Gagal Memperbarui", "Silakan unggah berkas video atau masukkan URL video valid.", "error");
+                return;
+            }
+
+            // Find vocab in state modules
+            let found = false;
+            appState.modules.forEach(m => {
+                m.vocab.forEach(v => {
+                    if (v.word === targetWord) {
+                        v.videoUrl = finalUrl;
+                        found = true;
+                    }
+                });
+            });
+
+            if (found) {
+                localStorage.setItem('medisign_v5_modules', JSON.stringify(appState.modules));
+                showAlertNotification("Video Istilah Diperbarui", `Video cara melakukan isyarat untuk kata "${targetWord}" berhasil diunggah.`, "success");
+                videoFile.value = '';
+                document.getElementById('admin-dict-video-url').value = '';
+                if (appState.activeDetailTab === 'dictionary' || document.getElementById('view-dictionary').classList.contains('hidden') === false) {
+                    filterDictionarySearch();
+                }
+            } else {
+                showAlertNotification("Gagal", "Istilah medis tidak ditemukan di database.", "error");
+            }
+        }
+
+        // --- ADMIN PANEL CHART.JS ANALYTICS METRICS ---
+        let adminChartInstance = null;
+
+        function initAdminChartJS() {
+            const ctx = document.getElementById('admin-chart-analytics').getContext('2d');
+            adminChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9'],
+                    datasets: [{
+                        label: 'Nilai Kuis (%)',
+                        data: getModulesScoresDataset(),
+                        backgroundColor: 'rgba(2, 132, 199, 0.75)',
+                        borderColor: '#0284c7',
+                        borderWidth: 1.5,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: { font: { size: 10 }, color: '#94a3b8' }
+                        },
+                        x: {
+                            ticks: { font: { size: 10 }, color: '#94a3b8' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function getModulesScoresDataset() {
+            return appState.modules.map(m => m.quizScore || 0);
+        }
+
+        function updateAdminChartMetrics() {
+            if (adminChartInstance) {
+                adminChartInstance.data.datasets[0].data = getModulesScoresDataset();
+                adminChartInstance.update();
+            }
+        }
+
+        // --- POPUP DIALOG SYSTEM ---
+        function showAlertNotification(title, message, type = 'success') {
+            const modal = document.getElementById('custom-alert-modal');
+            const wrapper = document.getElementById('alert-icon-wrapper');
+            const icon = document.getElementById('alert-icon-box');
+            const titleBox = document.getElementById('alert-title-box');
+            const messageBox = document.getElementById('alert-message-box');
+
+            titleBox.innerHTML = title;
+            messageBox.innerHTML = message;
+
+            if (type === 'success') {
+                wrapper.className = "w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-2xl shadow-inner";
+                icon.className = "fa-solid fa-circle-check";
+            } else if (type === 'info') {
+                wrapper.className = "w-14 h-14 bg-sky-100 text-sky-600 rounded-full flex items-center justify-center text-2xl shadow-inner";
+                icon.className = "fa-solid fa-circle-info";
+            } else {
+                wrapper.className = "w-14 h-14 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center text-2xl shadow-inner";
+                icon.className = "fa-solid fa-circle-xmark";
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeAlertModal() {
+            document.getElementById('custom-alert-modal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
